@@ -1,7 +1,7 @@
 package com.sapo.mockprojectpossystem.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 @Entity
 @Getter
@@ -22,14 +21,17 @@ public class User implements UserDetails {
     private Integer id;
 
     @Column(nullable = false, unique = true)
+    @Size(min = 3, max = 30)
     private String username;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 12)
     private String phoneNum;
 
     @Column(nullable = false)
+    @Size(min = 6)
     private String password;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
 

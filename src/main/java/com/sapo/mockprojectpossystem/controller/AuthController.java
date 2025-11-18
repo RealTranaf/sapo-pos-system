@@ -1,8 +1,10 @@
 package com.sapo.mockprojectpossystem.controller;
 
+import com.sapo.mockprojectpossystem.model.Role;
 import com.sapo.mockprojectpossystem.response.LoginResponse;
 import com.sapo.mockprojectpossystem.response.MessageResponse;
 import com.sapo.mockprojectpossystem.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,13 +21,46 @@ public class AuthController {
         this.authService = authService;
     }
 
-    record AuthRequest(String username, String password) {}
+    record LoginRequest(String username, String password) {}
+
+    record SignUpRequest(String username, String phoneNum, String password, Role role) {}
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticate(@RequestBody AuthRequest authRequest){
+    public ResponseEntity<?> authenticate(@RequestBody LoginRequest loginRequest){
         try{
-            LoginResponse loginResponse = authService.auth(authRequest.username, authRequest.password);
+            LoginResponse loginResponse = authService.auth(loginRequest.username, loginRequest.password);
             return ResponseEntity.ok(loginResponse);
+        } catch (RuntimeException e){
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+        }
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<?> createAccount(@RequestBody SignUpRequest signUpRequest){
+        try{
+            authService.signup(signUpRequest.username, signUpRequest.phoneNum, signUpRequest.password, signUpRequest.role);
+            return ResponseEntity.ok().body(new MessageResponse("Account created successfully"));
+        } catch (RuntimeException e){
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        try {
+            String authHeader = request.getHeader("Authorization");
+            authService.logout(authHeader);
+            return ResponseEntity.ok("Logged out successfully");
+        } catch (RuntimeException e){
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody String phoneNum, @RequestBody String newPassword) {
+        try {
+            authService.resetPassword(phoneNum, newPassword);
+            return ResponseEntity.ok("Password changed successfully");
         } catch (RuntimeException e){
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
