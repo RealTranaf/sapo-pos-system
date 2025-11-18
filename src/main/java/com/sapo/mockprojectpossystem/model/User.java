@@ -40,9 +40,9 @@ public class User implements UserDetails {
         this.role = role;
     }
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<Token> tokens;
+    private String token;
+
+    private boolean expired;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
