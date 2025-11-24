@@ -25,6 +25,8 @@ public class AuthController {
 
     record SignUpRequest(String username, String phoneNum, String password, Role role) {}
 
+    record ResetRequest(String phoneNum, String newPassword) {}
+
     @PostMapping("/login")
     public ResponseEntity<?> authenticate(@RequestBody LoginRequest loginRequest){
         try{
@@ -57,9 +59,9 @@ public class AuthController {
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody String phoneNum, @RequestBody String newPassword) {
+    public ResponseEntity<?> resetPassword(@RequestBody ResetRequest resetRequest) {
         try {
-            authService.resetPassword(phoneNum, newPassword);
+            authService.resetPassword(resetRequest.phoneNum, resetRequest.newPassword);
             return ResponseEntity.ok("Password changed successfully");
         } catch (RuntimeException e){
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
