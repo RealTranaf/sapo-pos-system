@@ -23,7 +23,7 @@ public class AuthController {
 
     record LoginRequest(String username, String password) {}
 
-    record SignUpRequest(String username, String phoneNum, String password, Role role) {}
+    record SignUpRequest(String username, String name, String phoneNum, String password, Role role, boolean isActive) {}
 
     record ResetRequest(String phoneNum, String newPassword) {}
 
@@ -40,7 +40,7 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> createAccount(@RequestBody SignUpRequest signUpRequest){
         try{
-            authService.signup(signUpRequest.username, signUpRequest.phoneNum, signUpRequest.password, signUpRequest.role);
+            authService.signup(signUpRequest.username, signUpRequest.phoneNum, signUpRequest.name, signUpRequest.password, signUpRequest.isActive, signUpRequest.role);
             return ResponseEntity.ok().body(new MessageResponse("Account created successfully"));
         } catch (RuntimeException e){
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));

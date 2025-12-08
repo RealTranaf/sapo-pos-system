@@ -25,15 +25,15 @@ public class AuthService {
         this.userRepository = userRepository;
     }
 
-    private static final String PHONE_REGEX = "^0[2|3|5|7|8|9][0-9]{9}$";
+    private static final String PHONE_REGEX = "^0[2|3|5|7|8|9][0-9]{8,9}$";
 
     public LoginResponse auth(String username, String password){
 
         if (username == null || username.isBlank()) {
-            throw new IllegalArgumentException("Username must not be empty");
+            throw new RuntimeException("Username must not be empty");
         }
         if (password == null || password.isBlank()) {
-            throw new IllegalArgumentException("Password must not be empty");
+            throw new RuntimeException("Password must not be empty");
         }
 
         User user = userRepository.findByUsername(username)
@@ -51,27 +51,33 @@ public class AuthService {
         return new LoginResponse(user.getUsername(), user.getRole(), jwtToken, jwtService.getJwtExpiration());
     }
 
-    public void signup(String username, String phoneNum, String password, Role role){
-
-        if (username == null || username.isBlank()) {
-            throw new IllegalArgumentException("Username must not be empty");
-        }
-        if (phoneNum == null || !phoneNum.matches(PHONE_REGEX)) {
-            throw new IllegalArgumentException("Phone number is invalid");
-        }
-        if (password == null || password.length() < 6) {
-            throw new IllegalArgumentException("Password must be at least 6 characters");
-        }
-        if (role == null) {
-            throw new IllegalArgumentException("Role is required");
-        }
+    public void signup(String username, String name, String phoneNum, String password, boolean isActive, Role role){
+        validateUser(username, phoneNum, password, role);
 
         if (userRepository.existsByPhoneNum(phoneNum) || userRepository.existsByUsername(username)) {
             throw new RuntimeException("This phone number or username has already been registered");
         }
 
-        User user = new User(username, phoneNum, passwordEncoder.encode(password), role);
+        User user = new User(username, name, phoneNum, passwordEncoder.encode(password), isActive, role);
         userRepository.save(user);
+    }
+
+    public static void validateUser(String username, String phoneNum, String password, Role role) {
+        if (username == null || username.isBlank()) {
+            throw new RuntimeException("Username must not be empty");
+        }
+        if (username.trim().length() < 3 || username.trim().length() > 30)
+            throw new RuntimeException("Username must be 3-30 characters");
+
+        if (phoneNum == null || !phoneNum.matches(PHONE_REGEX)) {
+            throw new RuntimeException("Phone number is invalid");
+        }
+        if (password == null || password.length() < 6) {
+            throw new RuntimeException("Password must be at least 6 characters");
+        }
+        if (role == null) {
+            throw new RuntimeException("Role is required");
+        }
     }
 
     public void logout(String authHeader) {
@@ -95,10 +101,10 @@ public class AuthService {
     public void resetPassword(String phoneNum, String newPassword) {
 
         if (phoneNum == null || !phoneNum.matches(PHONE_REGEX)) {
-            throw new IllegalArgumentException("Invalid phone number");
+            throw new RuntimeException("Invalid phone number");
         }
         if (newPassword == null || newPassword.length() < 6) {
-            throw new IllegalArgumentException("Password must be at least 6 characters");
+            throw new RuntimeException("Password must be at least 6 characters");
         }
 
         Optional<User> optionalUser = userRepository.findByPhoneNum(phoneNum);

@@ -24,6 +24,8 @@ public class User implements UserDetails {
     @Size(min = 3, max = 30)
     private String username;
 
+    private String name;
+
     @Column(nullable = false, unique = true, length = 12)
     private String phoneNum;
 
@@ -31,14 +33,18 @@ public class User implements UserDetails {
     @Size(min = 6)
     private String password;
 
+    private boolean isActive;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public User(String username, String phoneNum, String password, Role role) {
+    public User(String username, String name, String phoneNum, String password, boolean isActive, Role role) {
         this.username = username;
+        this.name = name;
         this.phoneNum = phoneNum;
         this.password = password;
+        this.isActive = isActive;
         this.role = role;
     }
 
