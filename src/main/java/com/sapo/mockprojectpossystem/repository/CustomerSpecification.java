@@ -7,7 +7,6 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class CustomerSpecification {
@@ -32,8 +31,10 @@ public class CustomerSpecification {
                 return null;
             }
 
+            query.distinct(true);
+
             Join<Customer, Purchase> purchases = root.join("purchases", JoinType.LEFT);
-            return cb.between(purchases.get("purchaseDate"), start, end);
+            return cb.between(purchases.get("createdAt"), start, end);
         };
     }
 

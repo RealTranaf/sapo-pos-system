@@ -2,10 +2,8 @@ package com.sapo.mockprojectpossystem.service;
 
 import com.sapo.mockprojectpossystem.model.Customer;
 import com.sapo.mockprojectpossystem.model.Gender;
-import com.sapo.mockprojectpossystem.model.Purchase;
 import com.sapo.mockprojectpossystem.repository.CustomerRepository;
 import com.sapo.mockprojectpossystem.repository.CustomerSpecification;
-import com.sapo.mockprojectpossystem.repository.PurchaseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +20,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomerService {
     private final CustomerRepository customerRepository;
-    private final PurchaseRepository purchaseRepository;
 
     private static final String PHONE_REGEX = "^0[2|3|5|7|8|9][0-9]{8,9}$";
 
@@ -96,20 +93,5 @@ public class CustomerService {
         if (phoneNum == null || !phoneNum.matches(PHONE_REGEX)) {
             throw new RuntimeException("Phone number is invalid");
         }
-    }
-
-    public void addPurchase(Integer customerId, float amount, LocalDateTime purchaseDate, String note) {
-        Customer customer = customerRepository.findById(customerId).orElseThrow();
-        LocalDateTime now = LocalDateTime.now();
-        if (purchaseDate != null) {
-            now = purchaseDate;
-        }
-        Purchase purchase = new Purchase(customer, amount, now, note);
-        purchaseRepository.save(purchase);
-        customer.setLastPurchaseDate(now);
-
-        float total = purchaseRepository.getTotalPurchaseByCustomerId(customer.getId());
-        customer.setTotalPurchaseAmount(total);
-        customerRepository.save(customer);
     }
 }

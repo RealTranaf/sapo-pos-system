@@ -43,7 +43,7 @@ public class Customer {
 
     private LocalDateTime lastPurchaseDate;
 
-    private float totalPurchaseAmount = 0;
+    private double totalPurchaseAmount = 0.0;
 
     public Customer(String name, String phoneNum, Gender gender, String note) {
         this.name = name;

@@ -1,12 +1,10 @@
 package com.sapo.mockprojectpossystem.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -21,19 +19,30 @@ public class Purchase {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    private float amount;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @Column(nullable = false)
-    private LocalDateTime purchaseDate;
+    private double totalAmount = 0.0;
+    private double discountAmount = 0.0;
 
     @Lob
     @Column(columnDefinition = "TEXT")
     private String note;
 
-    public Purchase(Customer customer, float amount, LocalDateTime purchaseDate, String note) {
+    @Column(name = "created_at", updatable = false)
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL)
+    private List<PurchaseItem> purchaseItems;
+
+    public Purchase(Customer customer, User user, double totalAmount, double discountAmount, String note, List<PurchaseItem> purchaseItems) {
         this.customer = customer;
-        this.amount = amount;
-        this.purchaseDate = purchaseDate;
+        this.user = user;
+        this.totalAmount = totalAmount;
+        this.discountAmount = discountAmount;
         this.note = note;
+        this.purchaseItems = purchaseItems;
     }
 }
