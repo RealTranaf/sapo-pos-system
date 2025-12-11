@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 public class BrandController {
     private final BrandService brandService;
 
+    // Lấy hết danh sách các brand
     @GetMapping
     public ResponseEntity<?> getAllBrands(@RequestParam(defaultValue = "0") int page,
                                           @RequestParam(defaultValue = "10") int size) {
@@ -37,6 +38,7 @@ public class BrandController {
         }
     }
 
+    // Lấy brand theo ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getBrandById(@PathVariable Integer id) {
         try {
@@ -47,6 +49,7 @@ public class BrandController {
         }
     }
 
+    // Thêm brand mới (cần param name)
     @PostMapping
     public ResponseEntity<?> addBrand(@RequestParam String name) {
         try {
@@ -57,6 +60,7 @@ public class BrandController {
         }
     }
 
+    // Cập nhật brand (cần param name)
     @PutMapping("/{id}")
     public ResponseEntity<?> updateBrand(@PathVariable Integer id,
                                          @RequestParam String name) {
@@ -67,5 +71,4 @@ public class BrandController {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
     }
-
 }

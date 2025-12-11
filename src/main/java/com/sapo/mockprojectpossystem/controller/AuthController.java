@@ -27,6 +27,7 @@ public class AuthController {
 
     record ResetRequest(String phoneNum, String newPassword) {}
 
+    // Đăng nhập
     @PostMapping("/login")
     public ResponseEntity<?> authenticate(@RequestBody LoginRequest loginRequest){
         try{
@@ -37,6 +38,7 @@ public class AuthController {
         }
     }
 
+    // Tạo tài khoản (dành cho OWNER)
     @PostMapping("/signup")
     public ResponseEntity<?> createAccount(@RequestBody SignUpRequest signUpRequest){
         try{
@@ -47,6 +49,7 @@ public class AuthController {
         }
     }
 
+    // Đăng xuất
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
         try {
@@ -58,6 +61,7 @@ public class AuthController {
         }
     }
 
+    // Reset mật khẩu
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody ResetRequest resetRequest) {
         try {

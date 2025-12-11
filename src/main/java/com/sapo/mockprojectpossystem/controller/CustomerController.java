@@ -24,6 +24,7 @@ public class CustomerController {
         this.customerService = customerService;
     }
 
+    // Lấy danh sách customer với chức năng sorting và tìm kiếm
     @GetMapping
     public ResponseEntity<?> getAllCustomers(@RequestParam(required = false) String keyword,
                                              @RequestParam(defaultValue = "0") int page,
@@ -47,6 +48,7 @@ public class CustomerController {
         }
     }
 
+    // Lấy customer theo ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getCustomerById(@PathVariable Integer id) {
         try {
@@ -57,6 +59,7 @@ public class CustomerController {
         }
     }
 
+    // Thêm customer mới
     @PostMapping
     public ResponseEntity<?> addCustomer(@RequestParam String name,
                                          @RequestParam String phoneNum,
@@ -70,6 +73,7 @@ public class CustomerController {
         }
     }
 
+    // Cập nhật customer
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCustomer(@PathVariable Integer id,
                                             @RequestParam String name,

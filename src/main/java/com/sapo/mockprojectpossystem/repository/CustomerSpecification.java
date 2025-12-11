@@ -24,6 +24,7 @@ public class CustomerSpecification {
             );
         };
     }
+    // Query tìm kiếm từ keyword theo tên hoặc SDT của customer
 
     public static Specification<Customer> purchaseDateBetween(LocalDateTime start, LocalDateTime end) {
         return (root, query, cb) -> {
@@ -37,6 +38,7 @@ public class CustomerSpecification {
             return cb.between(purchases.get("createdAt"), start, end);
         };
     }
+    // Query tìm kiếm customer đã mua hàng trong một khoảng thời gian nhất định
 
     public static Specification<Customer> genderEquals(Gender gender) {
         return (root, query, cb) -> {
@@ -46,4 +48,5 @@ public class CustomerSpecification {
             return cb.equal(root.get("gender"), gender);
         };
     }
+    // Query tìm kiếm customer dựa theo giới tính
 }

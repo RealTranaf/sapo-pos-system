@@ -16,11 +16,13 @@ public class BrandService {
 
     private final BrandRepository brandRepository;
 
+    // Lấy page brand
     public Page<Brand> getAllBrand(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         return brandRepository.findAll(pageable);
     }
 
+    // Lấy brand theo id
     public Brand getBrandById(Integer id) {
         Optional<Brand> optional = brandRepository.findById(id);
         if (optional.isPresent()) {
@@ -30,11 +32,13 @@ public class BrandService {
         }
     }
 
+    // Tạo brand từ name
     public void createBrand(String name) {
         Brand brand = new Brand(name);
         brandRepository.save(brand);
     }
 
+    // Cập nhật brand
     public void updateBrand(Integer id, String name) {
         Optional<Brand> optional = brandRepository.findById(id);
         if (optional.isPresent()) {

@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 public class TypeController {
     private final TypeService typeService;
 
+    // Lấy danh sách Type
     @GetMapping
     public ResponseEntity<?> getAllTypes(@RequestParam(defaultValue = "0") int page,
                                           @RequestParam(defaultValue = "10") int size) {
@@ -37,6 +38,7 @@ public class TypeController {
         }
     }
 
+    // Lấy type theo ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getTypeById(@PathVariable Integer id) {
         try {
@@ -47,6 +49,7 @@ public class TypeController {
         }
     }
 
+    // Thêm type mới
     @PostMapping
     public ResponseEntity<?> addType(@RequestParam String name) {
         try {
@@ -57,6 +60,7 @@ public class TypeController {
         }
     }
 
+    // Cập nhật type
     @PutMapping("/{id}")
     public ResponseEntity<?> updateType(@PathVariable Integer id,
                                          @RequestParam String name) {

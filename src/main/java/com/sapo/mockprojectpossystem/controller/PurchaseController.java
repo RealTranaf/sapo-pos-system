@@ -13,45 +13,67 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/purchasess")
+@RequestMapping("/purchases")
 public class PurchaseController {
-    private final PurchaseService purchasesService;
+    private final PurchaseService purchaseService;
 
+    // Lấy danh sách đơn hàng, có sorting và tìm kiếm
     @GetMapping
-    public ResponseEntity<?> getAllPurchase(@RequestParam(defaultValue = "0") int page,
-                                         @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<?> getAllPurchases(@RequestParam(required = false) String keyword,
+                                             @RequestParam(required = false) Integer customerId,
+                                             @RequestParam(required = false) Integer userId,
+                                             @RequestParam(required = false) Double minTotal,
+                                             @RequestParam(required = false) Double maxTotal,
+                                             @RequestParam(required = false) Double minDiscount,
+                                             @RequestParam(required = false) Double maxDiscount,
+                                             @RequestParam(required = false) String startDate,
+                                             @RequestParam(required = false) String endDate,
+                                             @RequestParam(defaultValue = "0") int page,
+                                             @RequestParam(defaultValue = "10") int size,
+                                             @RequestParam(defaultValue = "createdAt") String sortBy,
+                                             @RequestParam(defaultValue = "desc") String sortDir
+    ) {
         try {
+            Page<Purchase> purchasePage = purchaseService.getAllPurchase(keyword, customerId, userId,
+                    minTotal, maxTotal, minDiscount, maxDiscount,
+                    startDate, endDate, page, size, sortBy, sortDir
+            );
+
+            List<PurchaseResponse> purchases =
+                    purchasePage.stream().map(PurchaseResponse::new).toList();
+
             Map<String, Object> response = new HashMap<>();
-            Page<Purchase> purchasesPage = purchasesService.getAllPurchase(page, size);
-            List<PurchaseResponse> purchasesResponses = purchasesPage.stream().map(PurchaseResponse::new).collect(Collectors.toList());
-            response.put("purchasess", purchasesResponses);
-            response.put("currentPage", purchasesPage.getNumber());
-            response.put("totalItems", purchasesPage.getTotalElements());
-            response.put("totalPages", purchasesPage.getTotalPages());
+            response.put("purchases", purchases);
+            response.put("currentPage", purchasePage.getNumber());
+            response.put("totalItems", purchasePage.getTotalElements());
+            response.put("totalPages", purchasePage.getTotalPages());
+
             return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
+
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
     }
 
+    // Lấy đơn hàng theo ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getPurchaseById(@PathVariable Integer id) {
         try {
-            Purchase purchases = purchasesService.getPurchaseById(id);
+            Purchase purchases = purchaseService.getPurchaseById(id);
             return ResponseEntity.ok(new PurchaseResponse(purchases));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
     }
 
+    // Thêm đơn hàng mới
     @PostMapping
     public ResponseEntity<?> addPurchase(@RequestBody PurchaseRequest request) {
         try {
-            purchasesService.createPurchase(request);
+            purchaseService.createPurchase(request);
             return ResponseEntity.ok(new MessageResponse("Purchase added successfully"));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));

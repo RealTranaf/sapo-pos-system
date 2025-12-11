@@ -21,23 +21,44 @@ import java.util.stream.Collectors;
 public class ProductController {
     private final ProductService productService;
 
+    // Lấy danh sách product, có sorting và tìm kiếm
     @GetMapping
-    public ResponseEntity<?> getAllCustomers(@RequestParam(defaultValue = "0") int page,
-                                             @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<?> getAllProducts(@RequestParam(required = false) String keyword,
+                                            @RequestParam(required = false) Integer brandId,
+                                            @RequestParam(required = false) List<Integer> typeIds,
+                                            @RequestParam(required = false) ProductStatus status,
+                                            @RequestParam(required = false) Double minBasePrice,
+                                            @RequestParam(required = false) Double maxBasePrice,
+                                            @RequestParam(required = false) Double minSellPrice,
+                                            @RequestParam(required = false) Double maxSellPrice,
+                                            @RequestParam(defaultValue = "0") int page,
+                                            @RequestParam(defaultValue = "10") int size,
+                                            @RequestParam(defaultValue = "createdAt") String sortBy,
+                                            @RequestParam(defaultValue = "desc") String sortDir
+    ) {
         try {
+            Page<Product> productPage = productService.getAllProduct(keyword, brandId, typeIds, status,
+                    minBasePrice, maxBasePrice, minSellPrice, maxSellPrice,
+                    page, size, sortBy, sortDir
+            );
+
+            List<ProductResponse> productResponses =
+                    productPage.stream().map(ProductResponse::new).toList();
+
             Map<String, Object> response = new HashMap<>();
-            Page<Product> productPage = productService.getAllProduct(page, size);
-            List<ProductResponse> productResponses = productPage.stream().map(ProductResponse::new).collect(Collectors.toList());
             response.put("products", productResponses);
             response.put("currentPage", productPage.getNumber());
             response.put("totalItems", productPage.getTotalElements());
             response.put("totalPages", productPage.getTotalPages());
+
             return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
+
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
     }
 
+    // Lấy product theo ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getProductById(@PathVariable Integer id) {
         try {
@@ -48,6 +69,7 @@ public class ProductController {
         }
     }
 
+    // Thêm product mới
     @PostMapping
     public ResponseEntity<?> addProduct(@RequestParam String name,
                                         @RequestParam String sku,
@@ -69,6 +91,7 @@ public class ProductController {
         }
     }
 
+    // Cập nhật product
     @PutMapping("/{id}")
     public ResponseEntity<?> updateProduct(@PathVariable Integer id,
                                             @RequestParam String name,

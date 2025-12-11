@@ -3,14 +3,18 @@ package com.sapo.mockprojectpossystem.service;
 import com.sapo.mockprojectpossystem.model.*;
 import com.sapo.mockprojectpossystem.repository.BrandRepository;
 import com.sapo.mockprojectpossystem.repository.ProductRepository;
+import com.sapo.mockprojectpossystem.repository.ProductSpecification;
 import com.sapo.mockprojectpossystem.repository.TypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,11 +26,45 @@ public class ProductService {
     private final TypeRepository typeRepository;
     private final ProductRepository productRepository;
 
-    public Page<Product> getAllProduct(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        return productRepository.findAll(pageable);
-    }
+    // Lấy danh sách product, có tìm kiếm và sorting
+    // Keyword: tìm kiếm product có name hoặc sku hoặc barcode giống với keyword
+    // brandId, typeIds, status: tìm kiếm product có brand, type hoặc giống với loại cần tìm
+    // minBasePrice, maxBasePrice: tìm kiếm product có basePrice trong khoảng giá cần tìm
+    // minSellPrice, maxSellPrice: tìm kiếm product có sellPrice trong khoảng giá cần tìm
+    // sortBy, sortDir: sorting theo các thuộc tính của product (kiểm tra class Product để lấy các thuộc tính)
+    public Page<Product> getAllProduct(String keyword, Integer brandId, List<Integer> typeIds,
+                                       ProductStatus status, Double minBasePrice, Double maxBasePrice,
+                                       Double minSellPrice, Double maxSellPrice,
+                                       int page, int size, String sortBy, String sortDir
+    ) {
+        Sort.Direction direction = sortDir.equalsIgnoreCase("asc")
+                ? Sort.Direction.ASC : Sort.Direction.DESC;
 
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
+        Specification<Product> spec = Specification
+                .where(ProductSpecification.containKeyword(keyword))
+                .and(ProductSpecification.brandEquals(brandId))
+                .and(ProductSpecification.hasTypes(typeIds))
+                .and(ProductSpecification.statusEquals(status))
+                .and(ProductSpecification.basePriceBetween(minBasePrice, maxBasePrice))
+                .and(ProductSpecification.sellPriceBetween(minSellPrice, maxSellPrice));
+
+        return productRepository.findAll(spec, pageable);
+    }
+    // Ví dụ Query để thực hiện tìm kiếm
+    // /products?keyword={keyword}
+    //&brandId=3
+    //&typeIds=1,4,7
+    //&status=ACTIVE
+    //&minBasePrice=100
+    //&maxBasePrice=500
+    //&page=0
+    //&size=20
+    //&sortBy=createdAt
+    //&sortDir=desc
+
+    // Tạo product mới
     public void createProduct(String name, String sku, String barcode,
                               ProductStatus status, String description,
                               double basePrice, double sellPrice,
@@ -44,6 +82,7 @@ public class ProductService {
         productRepository.save(product);
     }
 
+    // Lấy product theo id
     public Product getProductById(Integer id) {
         Optional<Product> optional = productRepository.findById(id);
         if (optional.isPresent()) {
@@ -53,6 +92,7 @@ public class ProductService {
         }
     }
 
+    // Cập nhật product
     public void updateProduct(Integer id, String name, String sku, String barcode,
                               ProductStatus status, String description,
                               double basePrice, double sellPrice,

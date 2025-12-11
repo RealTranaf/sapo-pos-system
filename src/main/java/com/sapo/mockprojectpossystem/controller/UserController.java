@@ -25,8 +25,9 @@ public class UserController {
 
     private final UserService userService;
 
+    // Lấy danh sách user, có sorting và tìm kiếm
     @GetMapping
-    public ResponseEntity<?> getAllCustomers(@RequestParam(required = false) String keyword,
+    public ResponseEntity<?> getAllUser(@RequestParam(required = false) String keyword,
                                              @RequestParam(defaultValue = "0") int page,
                                              @RequestParam(defaultValue = "10") int size,
                                              @RequestParam(defaultValue = "id") String sortBy,
@@ -45,6 +46,7 @@ public class UserController {
         }
     }
 
+    // Lấy user theo id
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Integer id) {
         try {
@@ -55,6 +57,7 @@ public class UserController {
         }
     }
 
+    // Cập nhật user
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Integer id,
                                         @RequestParam String username,
