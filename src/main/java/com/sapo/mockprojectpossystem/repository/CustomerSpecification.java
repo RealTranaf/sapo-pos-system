@@ -20,7 +20,8 @@ public class CustomerSpecification {
 
             return cb.or(
                     cb.like(cb.lower(root.get("name")), pattern),
-                    cb.like(root.get("phoneNum"), pattern)
+                    cb.like(root.get("phoneNum"), pattern),
+                    cb.like(cb.lower(root.get("note")), pattern)
             );
         };
     }
@@ -49,4 +50,17 @@ public class CustomerSpecification {
         };
     }
     // Query tìm kiếm customer dựa theo giới tính
+
+    public static Specification<Customer> purchaseAmountBetween(Double min, Double max) {
+        return (root, query, cb) -> {
+            if (min == null && max == null) return null;
+
+            if (min != null && max != null)
+                return cb.between(root.get("totalPurchaseAmount"), min, max);
+            if (min != null)
+                return cb.greaterThanOrEqualTo(root.get("totalPurchaseAmount"), min);
+            return cb.lessThanOrEqualTo(root.get("totalPurchaseAmount"), max);
+        };
+    }
+    // Query tìm kiếm customer theo khoảng tổng đơn hàng đã mua
 }

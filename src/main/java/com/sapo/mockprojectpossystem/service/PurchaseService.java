@@ -31,12 +31,17 @@ public class PurchaseService {
     // minTotal, maxTotal: tìm kiếm đơn hàng có tổng tiền trong khoản cần tìm
     // minDiscount, maxDiscount: tìm kiếm đơn hàng có tiền khuyến mãi trong khoản cần tìm
     // startDate, endDate: tìm kiếm đơn hàng đã mua trong khoản thời gian cần tìm
+    // productId: tìm kiếm đơn hàng có chứa product nhất định
     // sortBy, sortDir: sorting theo các thuộc tính của đơn hàng (kiểm tra class Purchase để lấy các thuộc tính)
     public Page<Purchase> getAllPurchase(String keyword, Integer customerId, Integer userId,
                                          Double minTotal, Double maxTotal, Double minDiscount, Double maxDiscount,
                                          String startDate, String endDate,
+                                         Integer productId,
                                          int page, int size, String sortBy, String sortDir
     ) {
+        if (sortBy == null || sortBy.isBlank()) {
+            sortBy = "createdAt";
+        }
         Sort.Direction direction = sortDir.equalsIgnoreCase("asc")
                 ? Sort.Direction.ASC : Sort.Direction.DESC;
 
@@ -61,7 +66,8 @@ public class PurchaseService {
                 .and(PurchaseSpecification.userEquals(userId))
                 .and(PurchaseSpecification.totalAmountBetween(minTotal, maxTotal))
                 .and(PurchaseSpecification.discountAmountBetween(minDiscount, maxDiscount))
-                .and(PurchaseSpecification.createdDateBetween(startDateTime, endDateTime));
+                .and(PurchaseSpecification.createdDateBetween(startDateTime, endDateTime))
+                .and(PurchaseSpecification.containsProduct(productId));
 
         return purchaseRepository.findAll(spec, pageable);
     }

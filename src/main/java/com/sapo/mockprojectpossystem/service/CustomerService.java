@@ -47,12 +47,17 @@ public class CustomerService {
     }
 
     // Lấy danh sách customer, có tìm kiếm và sorting
-    // Keyword: tìm kiếm customer có name hoặc phoneNum giống với keyword
+    // Keyword: tìm kiếm customer có name hoặc phoneNum hoặc note giống với keyword
     // startDate, endDate: tìm kiếm customer đã mua hàng trong khoản thời gian cần tìm
+    // minAmount, maxAmount: tìm kiếm customer theo khoảng tổng đơn hàng đã mua
     // gender: lấy danh sách customer có gender cần tìm
     // sortBy, sortDir: sorting theo các thuộc tính của customer (kiểm tra class Customer để lấy các thuộc tính)
     public Page<Customer> getAllCustomer(String keyword, int page, int size, String startDate, String endDate,
+                                         double minAmount, double maxAmount,
                                          String sortBy, String sortDir, Gender gender) {
+        if (sortBy == null || sortBy.isBlank()) {
+            sortBy = "createdAt";
+        }
         Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
@@ -68,7 +73,8 @@ public class CustomerService {
         Specification<Customer> spec = Specification
                 .where(CustomerSpecification.containKeyword(keyword))
                 .and(CustomerSpecification.purchaseDateBetween(startDateTime, endDateTime))
-                .and(CustomerSpecification.genderEquals(gender == null ? null : gender));
+                .and(CustomerSpecification.genderEquals(gender == null ? null : gender))
+                .and(CustomerSpecification.purchaseAmountBetween(minAmount, maxAmount));
 
         return customerRepository.findAll(spec, pageable);
     }

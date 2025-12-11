@@ -84,4 +84,31 @@ public class ProductSpecification {
         };
     }
     // Query tìm product có sellPrice trong khoảng min và max
+
+    public static Specification<Product> quantityBetween(Integer min, Integer max) {
+        return (root, query, cb) -> {
+            if (min == null && max == null) return null;
+
+            if (min != null && max != null)
+                return cb.between(root.get("quantity"), min, max);
+
+            if (min != null)
+                return cb.greaterThanOrEqualTo(root.get("quantity"), min);
+
+            return cb.lessThanOrEqualTo(root.get("quantity"), max);
+        };
+    }
+    // Query tìm product có quantity trong khoảng cần tìm
+
+    public static Specification<Product> inStock(Boolean inStock) {
+        return (root, query, cb) -> {
+            if (inStock == null) return null;
+
+            if (inStock)
+                return cb.greaterThan(root.get("quantity"), 0);
+
+            return cb.equal(root.get("quantity"), 0);
+        };
+    }
+    // Query tìm product có hay đã hết hàng
 }

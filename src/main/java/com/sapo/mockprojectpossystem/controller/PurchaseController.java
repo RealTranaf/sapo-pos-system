@@ -31,6 +31,7 @@ public class PurchaseController {
                                              @RequestParam(required = false) Double maxDiscount,
                                              @RequestParam(required = false) String startDate,
                                              @RequestParam(required = false) String endDate,
+                                             @RequestParam(required = false) Integer productId,
                                              @RequestParam(defaultValue = "0") int page,
                                              @RequestParam(defaultValue = "10") int size,
                                              @RequestParam(defaultValue = "createdAt") String sortBy,
@@ -39,7 +40,7 @@ public class PurchaseController {
         try {
             Page<Purchase> purchasePage = purchaseService.getAllPurchase(keyword, customerId, userId,
                     minTotal, maxTotal, minDiscount, maxDiscount,
-                    startDate, endDate, page, size, sortBy, sortDir
+                    startDate, endDate, productId, page, size, sortBy, sortDir
             );
 
             List<PurchaseResponse> purchases =

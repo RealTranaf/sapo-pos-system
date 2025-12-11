@@ -2,6 +2,7 @@ package com.sapo.mockprojectpossystem.repository;
 
 import com.sapo.mockprojectpossystem.model.Customer;
 import com.sapo.mockprojectpossystem.model.Purchase;
+import com.sapo.mockprojectpossystem.model.PurchaseItem;
 import com.sapo.mockprojectpossystem.model.User;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -83,4 +84,15 @@ public class PurchaseSpecification {
         };
     }
     // Query tìm kiếm đơn hàng xảy ra trong khoản thời gian nhất định
+
+    public static Specification<Purchase> containsProduct(Integer productId) {
+        return (root, query, cb) -> {
+            if (productId == null) return null;
+
+            Join<Purchase, PurchaseItem> items = root.join("purchaseItems", JoinType.LEFT);
+
+            return cb.equal(items.get("product").get("id"), productId);
+        };
+    }
+    // Query tìm kiếm đơn hàng có chứa product nhất định
 }

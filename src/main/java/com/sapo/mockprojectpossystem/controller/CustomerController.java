@@ -31,12 +31,14 @@ public class CustomerController {
                                              @RequestParam(defaultValue = "10") int size,
                                              @RequestParam(required = false) String startDate,
                                              @RequestParam(required = false) String endDate,
+                                             @RequestParam(required = false) double minAmount,
+                                             @RequestParam(required = false) double maxAmount,
                                              @RequestParam(defaultValue = "lastPurchaseDate") String sortBy,
                                              @RequestParam(defaultValue = "desc") String sortDir,
                                              @RequestParam(required = false) Gender gender) {
         try {
             Map<String, Object> response = new HashMap<>();
-            Page<Customer> customerPage = customerService.getAllCustomer(keyword, page, size, startDate, endDate, sortBy, sortDir, gender);
+            Page<Customer> customerPage = customerService.getAllCustomer(keyword, page, size, startDate, endDate, minAmount, maxAmount, sortBy, sortDir, gender);
             List<CustomerResponse> customerResponses = customerPage.stream().map(CustomerResponse::new).collect(Collectors.toList());
             response.put("customers", customerResponses);
             response.put("currentPage", customerPage.getNumber());

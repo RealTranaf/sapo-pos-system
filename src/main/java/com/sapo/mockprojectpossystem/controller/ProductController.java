@@ -31,6 +31,9 @@ public class ProductController {
                                             @RequestParam(required = false) Double maxBasePrice,
                                             @RequestParam(required = false) Double minSellPrice,
                                             @RequestParam(required = false) Double maxSellPrice,
+                                            @RequestParam(required = false) int minQty,
+                                            @RequestParam(required = false) int maxQty,
+                                            @RequestParam(required = false) Boolean inStock,
                                             @RequestParam(defaultValue = "0") int page,
                                             @RequestParam(defaultValue = "10") int size,
                                             @RequestParam(defaultValue = "createdAt") String sortBy,
@@ -38,8 +41,8 @@ public class ProductController {
     ) {
         try {
             Page<Product> productPage = productService.getAllProduct(keyword, brandId, typeIds, status,
-                    minBasePrice, maxBasePrice, minSellPrice, maxSellPrice,
-                    page, size, sortBy, sortDir
+                    minBasePrice, maxBasePrice, minSellPrice, maxSellPrice, minQty, maxQty,
+                    inStock, page, size, sortBy, sortDir
             );
 
             List<ProductResponse> productResponses =

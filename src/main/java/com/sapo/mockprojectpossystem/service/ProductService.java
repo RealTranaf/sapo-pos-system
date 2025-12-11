@@ -31,12 +31,19 @@ public class ProductService {
     // brandId, typeIds, status: tìm kiếm product có brand, type hoặc giống với loại cần tìm
     // minBasePrice, maxBasePrice: tìm kiếm product có basePrice trong khoảng giá cần tìm
     // minSellPrice, maxSellPrice: tìm kiếm product có sellPrice trong khoảng giá cần tìm
+    // minQty, maxQty: tìm kiếm product có quantity trong khoảng cần tìm
+    // inStock: tìm kiếm product đã hoặc chưa hết hàng
     // sortBy, sortDir: sorting theo các thuộc tính của product (kiểm tra class Product để lấy các thuộc tính)
     public Page<Product> getAllProduct(String keyword, Integer brandId, List<Integer> typeIds,
                                        ProductStatus status, Double minBasePrice, Double maxBasePrice,
                                        Double minSellPrice, Double maxSellPrice,
+                                       int minQty, int maxQty,
+                                       Boolean inStock,
                                        int page, int size, String sortBy, String sortDir
     ) {
+        if (sortBy == null || sortBy.isBlank()) {
+            sortBy = "createdAt";
+        }
         Sort.Direction direction = sortDir.equalsIgnoreCase("asc")
                 ? Sort.Direction.ASC : Sort.Direction.DESC;
 
@@ -48,21 +55,12 @@ public class ProductService {
                 .and(ProductSpecification.hasTypes(typeIds))
                 .and(ProductSpecification.statusEquals(status))
                 .and(ProductSpecification.basePriceBetween(minBasePrice, maxBasePrice))
-                .and(ProductSpecification.sellPriceBetween(minSellPrice, maxSellPrice));
+                .and(ProductSpecification.sellPriceBetween(minSellPrice, maxSellPrice))
+                .and(ProductSpecification.quantityBetween(minQty, maxQty))
+                .and(ProductSpecification.inStock(inStock));
 
         return productRepository.findAll(spec, pageable);
     }
-    // Ví dụ Query để thực hiện tìm kiếm
-    // /products?keyword={keyword}
-    //&brandId=3
-    //&typeIds=1,4,7
-    //&status=ACTIVE
-    //&minBasePrice=100
-    //&maxBasePrice=500
-    //&page=0
-    //&size=20
-    //&sortBy=createdAt
-    //&sortDir=desc
 
     // Tạo product mới
     public void createProduct(String name, String sku, String barcode,
