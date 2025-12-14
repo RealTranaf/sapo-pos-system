@@ -83,6 +83,4 @@ public class CustomerController {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
     }
-
-
 }
