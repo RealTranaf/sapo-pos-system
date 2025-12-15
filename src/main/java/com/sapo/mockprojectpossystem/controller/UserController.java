@@ -11,6 +11,8 @@ import com.sapo.mockprojectpossystem.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -24,6 +26,27 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserService userService;
+
+
+    // Quang
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser() {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth == null) {
+                return ResponseEntity.status(401).body(new MessageResponse("Unauthorized"));
+            }
+
+            String username = auth.getName();
+            User user = userService.getUserByUsername(username);
+
+            return ResponseEntity.ok(new UserResponse(user));
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+        }
+    }
+
 
     // Lấy danh sách user, có sorting và tìm kiếm
     @GetMapping
