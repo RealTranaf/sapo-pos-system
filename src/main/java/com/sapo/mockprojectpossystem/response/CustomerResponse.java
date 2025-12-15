@@ -17,7 +17,7 @@ public class CustomerResponse {
     private Gender gender;
     private LocalDateTime createdAt;
     private LocalDateTime lastPurchaseDate;
-    private float totalPurchaseAmount;
+    private double totalPurchaseAmount;
     private List<PurchaseResponse> purchases;
 
     public CustomerResponse(Customer customer) {
