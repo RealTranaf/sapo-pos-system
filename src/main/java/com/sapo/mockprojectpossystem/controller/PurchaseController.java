@@ -8,6 +8,7 @@ import com.sapo.mockprojectpossystem.service.PurchaseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -21,6 +22,7 @@ public class PurchaseController {
     private final PurchaseService purchaseService;
 
     // Lấy danh sách đơn hàng, có sorting và tìm kiếm
+    @PreAuthorize("hasAnyRole('OWNER', 'SALES', 'CS')")
     @GetMapping
     public ResponseEntity<?> getAllPurchases(@RequestParam(required = false) String keyword,
                                              @RequestParam(required = false) Integer customerId,
@@ -60,6 +62,7 @@ public class PurchaseController {
     }
 
     // Lấy đơn hàng theo ID
+    @PreAuthorize("hasAnyRole('OWNER', 'SALES', 'CS')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getPurchaseById(@PathVariable Integer id) {
         try {
@@ -71,6 +74,7 @@ public class PurchaseController {
     }
 
     // Thêm đơn hàng mới
+    @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
     @PostMapping
     public ResponseEntity<?> addPurchase(@RequestBody PurchaseRequest request) {
         try {

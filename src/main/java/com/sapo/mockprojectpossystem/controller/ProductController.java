@@ -8,6 +8,7 @@ import com.sapo.mockprojectpossystem.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -22,6 +23,7 @@ public class ProductController {
     private final ProductService productService;
 
     // Lấy danh sách product, có sorting và tìm kiếm
+    @PreAuthorize("hasAnyRole('OWNER', 'WH', 'SALES')")
     @GetMapping
     public ResponseEntity<?> getAllProducts(@RequestParam(required = false) String keyword,
                                             @RequestParam(required = false) Integer brandId,
@@ -62,6 +64,7 @@ public class ProductController {
     }
 
     // Lấy product theo ID
+    @PreAuthorize("hasAnyRole('OWNER', 'WH', 'SALES')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getProductById(@PathVariable Integer id) {
         try {
@@ -73,6 +76,7 @@ public class ProductController {
     }
 
     // Thêm product mới
+    @PreAuthorize("hasAnyRole('OWNER', 'WH')")
     @PostMapping
     public ResponseEntity<?> addProduct(@RequestParam String name,
                                         @RequestParam String sku,
@@ -95,6 +99,7 @@ public class ProductController {
     }
 
     // Cập nhật product
+    @PreAuthorize("hasAnyRole('OWNER', 'WH')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateProduct(@PathVariable Integer id,
                                             @RequestParam String name,

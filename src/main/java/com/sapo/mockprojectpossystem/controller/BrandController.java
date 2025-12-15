@@ -7,6 +7,7 @@ import com.sapo.mockprojectpossystem.service.BrandService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -21,6 +22,7 @@ public class BrandController {
     private final BrandService brandService;
 
     // Lấy hết danh sách các brand
+    @PreAuthorize("hasAnyRole('OWNER', 'WH')")
     @GetMapping
     public ResponseEntity<?> getAllBrands(@RequestParam(defaultValue = "0") int page,
                                           @RequestParam(defaultValue = "10") int size) {
@@ -39,6 +41,7 @@ public class BrandController {
     }
 
     // Lấy brand theo ID
+    @PreAuthorize("hasAnyRole('OWNER', 'WH', 'SALES')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getBrandById(@PathVariable Integer id) {
         try {
@@ -50,6 +53,7 @@ public class BrandController {
     }
 
     // Thêm brand mới (cần param name)
+    @PreAuthorize("hasAnyRole('OWNER', 'WH')")
     @PostMapping
     public ResponseEntity<?> addBrand(@RequestParam String name) {
         try {
@@ -61,6 +65,7 @@ public class BrandController {
     }
 
     // Cập nhật brand (cần param name)
+    @PreAuthorize("hasAnyRole('OWNER', 'WH')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateBrand(@PathVariable Integer id,
                                          @RequestParam String name) {

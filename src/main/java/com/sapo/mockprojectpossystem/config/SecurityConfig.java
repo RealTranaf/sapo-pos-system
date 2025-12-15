@@ -3,8 +3,10 @@ package com.sapo.mockprojectpossystem.config;
 import com.sapo.mockprojectpossystem.model.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -18,6 +20,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final AuthenticationProvider authProvider;
@@ -35,11 +38,17 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        // Đăng nhập, đăng xuất cho mọi người
                         .requestMatchers("/auth/login", "/auth/logout").permitAll()
+                        // Chỉ owner có quyền tạo tài khoản và reset password
                         .requestMatchers("/auth/reset-password", "/auth/signup").hasAnyRole(Role.OWNER.name())
-                        .requestMatchers("/test/hello-world").hasAnyRole(Role.OWNER.name())
-                        .requestMatchers("/users/**").hasAnyRole(Role.OWNER.name())
-                        .requestMatchers("/customers/**").hasAnyRole(Role.CS.name(), Role.OWNER.name())
+                        // Chỉ owner có quyền xem danh sách user
+                        .requestMatchers(
+                                "/users/**",
+                                "/customers/**",
+                                "/purchases/**",
+                                "/products/**"
+                        ).authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

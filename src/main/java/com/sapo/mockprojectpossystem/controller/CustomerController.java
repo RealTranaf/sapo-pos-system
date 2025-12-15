@@ -7,6 +7,7 @@ import com.sapo.mockprojectpossystem.response.MessageResponse;
 import com.sapo.mockprojectpossystem.service.CustomerService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -25,6 +26,7 @@ public class CustomerController {
     }
 
     // Lấy danh sách customer với chức năng sorting và tìm kiếm
+    @PreAuthorize("hasAnyRole('OWNER', 'CS', 'SALES')")
     @GetMapping
     public ResponseEntity<?> getAllCustomers(@RequestParam(required = false) String keyword,
                                              @RequestParam(defaultValue = "0") int page,
@@ -51,6 +53,7 @@ public class CustomerController {
     }
 
     // Lấy customer theo ID
+    @PreAuthorize("hasAnyRole('OWNER', 'CS', 'SALES')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getCustomerById(@PathVariable Integer id) {
         try {
@@ -62,6 +65,7 @@ public class CustomerController {
     }
 
     // Thêm customer mới
+    @PreAuthorize("hasAnyRole('OWNER', 'CS', 'SALES')")
     @PostMapping
     public ResponseEntity<?> addCustomer(@RequestParam String name,
                                          @RequestParam String phoneNum,
@@ -76,6 +80,7 @@ public class CustomerController {
     }
 
     // Cập nhật customer
+    @PreAuthorize("hasAnyRole('OWNER', 'CS')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCustomer(@PathVariable Integer id,
                                             @RequestParam String name,
