@@ -24,7 +24,7 @@ public class PurchaseService {
     private final PurchaseRepository purchaseRepository;
     private final CustomerRepository customerRepository;
     private final UserRepository userRepository;
-    private final ProductRepository productRepository;
+    private final ProductVariantRepository productVariantRepository;
 
     // Lấy danh sách đơn hàng, có tìm kiếm và sorting
     // Keyword: tìm kiếm đơn hàng có note hoặc tên khách hàng hoặc tên nhân viên giống với keyword
@@ -85,14 +85,14 @@ public class PurchaseService {
         List<PurchaseItem> items = new ArrayList<>();
 
         for (PurchaseItemRequest itemReq : purchaseRequest.getPurchaseItems()) {
-            Product product = productRepository.findById(itemReq.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Product not found: " + itemReq.getProductId()));
-            double itemTotal = product.getSellPrice() * itemReq.getQuantity();
+            ProductVariant product = productVariantRepository.findById(Long.parseLong(String.valueOf(itemReq.getProductVariantId())))
+                    .orElseThrow(() -> new RuntimeException("Product not found: " + itemReq.getProductVariantId()));
+            double itemTotal = product.getPrice().doubleValue() * itemReq.getQuantity();
             PurchaseItem item = new PurchaseItem(product, purchase, itemReq.getQuantity());
             item.setTotalPrice(itemTotal);
             items.add(item);
-            product.setQuantity(product.getQuantity() - itemReq.getQuantity());
-            productRepository.save(product);
+            product.setInventoryQuantity(product.getInventoryQuantity() - itemReq.getQuantity());
+            productVariantRepository.save(product);
         }
         purchase.setPurchaseItems(items);
         purchaseRepository.save(purchase);

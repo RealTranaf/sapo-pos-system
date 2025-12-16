@@ -1,7 +1,7 @@
 package com.sapo.mockprojectpossystem.response;
 
-import com.sapo.mockprojectpossystem.model.Brand;
 import com.sapo.mockprojectpossystem.model.Product;
+import com.sapo.mockprojectpossystem.model.Brand;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -13,7 +13,7 @@ public class BrandResponse {
     private Integer id;
     private String name;
     private LocalDateTime createdAt;
-    private List<Integer> productsId;
+    private List<Long> productsId;
 
     public BrandResponse(Brand brand) {
         this.id = brand.getId();

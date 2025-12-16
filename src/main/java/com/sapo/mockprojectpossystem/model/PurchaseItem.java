@@ -13,8 +13,8 @@ public class PurchaseItem {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
+    @JoinColumn(name = "product_variant_id")
+    private ProductVariant productVariant;
 
     @ManyToOne
     @JoinColumn(name = "order_id")
@@ -23,8 +23,8 @@ public class PurchaseItem {
     private int quantity;
     private double totalPrice;
 
-    public PurchaseItem(Product product, Purchase purchase, int quantity) {
-        this.product = product;
+    public PurchaseItem(ProductVariant product, Purchase purchase, int quantity) {
+        this.productVariant = product;
         this.purchase = purchase;
         this.quantity = quantity;
     }

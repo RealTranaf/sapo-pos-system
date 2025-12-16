@@ -1,124 +1,129 @@
 package com.sapo.mockprojectpossystem.controller;
 
-import com.sapo.mockprojectpossystem.model.Product;
-import com.sapo.mockprojectpossystem.model.ProductStatus;
-import com.sapo.mockprojectpossystem.response.MessageResponse;
-import com.sapo.mockprojectpossystem.response.ProductResponse;
-import com.sapo.mockprojectpossystem.service.ProductService;
+import com.sapo.mockprojectpossystem.dto.request.ProductCreateRequest;
+import com.sapo.mockprojectpossystem.dto.request.ProductSearchRequest;
+import com.sapo.mockprojectpossystem.dto.request.ProductUpdateRequest;
+import com.sapo.mockprojectpossystem.dto.request.ProductVariantRequest;
+import com.sapo.mockprojectpossystem.dto.response.PaginatedResponse;
+import com.sapo.mockprojectpossystem.dto.response.ProductImageResponse;
+import com.sapo.mockprojectpossystem.dto.response.ProductResponse;
+import com.sapo.mockprojectpossystem.dto.response.ProductVariantResponse;
+import com.sapo.mockprojectpossystem.service.interfaces.IProductImageService;
+import com.sapo.mockprojectpossystem.service.interfaces.IProductService;
+import com.sapo.mockprojectpossystem.service.interfaces.IProductVariantService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/products")
 public class ProductController {
-    private final ProductService productService;
+    private final IProductService productService;
+    private final IProductImageService productImageService;
+    private final IProductVariantService productVariantService;
 
-    // Lấy danh sách product, có sorting và tìm kiếm
-    @PreAuthorize("hasAnyRole('OWNER', 'WH', 'SALES')")
     @GetMapping
-    public ResponseEntity<?> getAllProducts(@RequestParam(required = false) String keyword,
-                                            @RequestParam(required = false) Integer brandId,
-                                            @RequestParam(required = false) List<Integer> typeIds,
-                                            @RequestParam(required = false) ProductStatus status,
-                                            @RequestParam(required = false) Double minBasePrice,
-                                            @RequestParam(required = false) Double maxBasePrice,
-                                            @RequestParam(required = false) Double minSellPrice,
-                                            @RequestParam(required = false) Double maxSellPrice,
-                                            @RequestParam(required = false) int minQty,
-                                            @RequestParam(required = false) int maxQty,
-                                            @RequestParam(required = false) Boolean inStock,
-                                            @RequestParam(defaultValue = "0") int page,
-                                            @RequestParam(defaultValue = "10") int size,
-                                            @RequestParam(defaultValue = "createdAt") String sortBy,
-                                            @RequestParam(defaultValue = "desc") String sortDir
+    public ResponseEntity<PaginatedResponse<ProductResponse>> getOrSearchProducts(
+        @Valid ProductSearchRequest productSearchRequest
     ) {
-        try {
-            Page<Product> productPage = productService.getAllProduct(keyword, brandId, typeIds, status,
-                    minBasePrice, maxBasePrice, minSellPrice, maxSellPrice, minQty, maxQty,
-                    inStock, page, size, sortBy, sortDir
-            );
-
-            List<ProductResponse> productResponses =
-                    productPage.stream().map(ProductResponse::new).toList();
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("products", productResponses);
-            response.put("currentPage", productPage.getNumber());
-            response.put("totalItems", productPage.getTotalElements());
-            response.put("totalPages", productPage.getTotalPages());
-
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
-        }
+        PaginatedResponse<ProductResponse> response = productService.getOrSearchProducts(productSearchRequest);
+        return ResponseEntity.ok(response);
     }
 
-    // Lấy product theo ID
-    @PreAuthorize("hasAnyRole('OWNER', 'WH', 'SALES')")
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getProductById(@PathVariable Integer id) {
-        try {
-            Product product = productService.getProductById(id);
-            return ResponseEntity.ok(new ProductResponse(product));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
-        }
+    @GetMapping("/{productId}")
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long productId) {
+        ProductResponse response = productService.getProductById(productId);
+        return ResponseEntity.ok(response);
     }
 
-    // Thêm product mới
-    @PreAuthorize("hasAnyRole('OWNER', 'WH')")
     @PostMapping
-    public ResponseEntity<?> addProduct(@RequestParam String name,
-                                        @RequestParam String sku,
-                                        @RequestParam(required = false) String barcode,
-                                        @RequestParam ProductStatus status,
-                                        @RequestParam(required = false) String description,
-                                        @RequestParam double basePrice,
-                                        @RequestParam double sellPrice,
-                                        @RequestParam int quantity,
-                                        @RequestParam(required = false) Integer brandId,
-                                        @RequestParam(required = false) List<Integer> typeIds) {
-        try {
-            productService.createProduct(name, sku, barcode,
-                    status, description, basePrice,
-                    sellPrice, quantity, brandId, typeIds);
-            return ResponseEntity.ok("Product added successfully!");
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
-        }
+    @PreAuthorize("hasAnyRole('OWNER', 'CASHIER')")
+    public ResponseEntity<ProductResponse> createProduct(
+        @Valid @RequestPart("product") ProductCreateRequest request,
+        @RequestPart(value = "images", required = false) List<MultipartFile> images
+    ) throws IOException {
+        ProductResponse response = productService.createProduct(request, images);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // Cập nhật product
-    @PreAuthorize("hasAnyRole('OWNER', 'WH')")
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateProduct(@PathVariable Integer id,
-                                            @RequestParam String name,
-                                            @RequestParam String sku,
-                                            @RequestParam(required = false) String barcode,
-                                            @RequestParam ProductStatus status,
-                                            @RequestParam(required = false) String description,
-                                            @RequestParam double basePrice,
-                                            @RequestParam double sellPrice,
-                                            @RequestParam int quantity,
-                                            @RequestParam(required = false) Integer brandId,
-                                            @RequestParam(required = false) List<Integer> typeIds) {
-        try {
-            productService.updateProduct(id, name, sku, barcode,
-                    status, description, basePrice,
-                    sellPrice, quantity, brandId, typeIds);
-            return ResponseEntity.ok("Product updated successfully!");
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
-        }
+    @PutMapping("/{productId}")
+    @PreAuthorize("hasAnyRole('OWNER', 'CASHIER')")
+    public ResponseEntity<ProductResponse> updateProduct(
+        @PathVariable Long productId,
+        @Valid @RequestBody ProductUpdateRequest request
+    ) {
+        ProductResponse response = productService.updateProduct(productId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{productId}")
+    @PreAuthorize("hasAnyRole('OWNER', 'CASHIER')")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
+        productService.deleteProduct(productId);
+        return ResponseEntity.noContent().build();
+    }
+    // product images
+
+    @PostMapping("/{productId}/images")
+    @PreAuthorize("hasAnyRole('OWNER', 'CASHIER')")
+    public ResponseEntity<ProductImageResponse> createProductImage(@PathVariable Long productId, @RequestPart("image") MultipartFile image) throws IOException {
+        return ResponseEntity.status(HttpStatus.CREATED).body(productImageService.createProductImage(productId, image));
+    }
+
+    @GetMapping("/{productId}/images/{imageId}")
+    @PreAuthorize("hasAnyRole('OWNER', 'CASHIER')")
+    public ResponseEntity<ProductImageResponse> getProductImageById(@PathVariable Long productId, @PathVariable Long imageId) {
+        return ResponseEntity.status(HttpStatus.OK).body(productImageService.getProductImageById(imageId, productId));
+    }
+
+    @GetMapping("/{productId}/images")
+    @PreAuthorize("hasAnyRole('OWNER', 'CASHIER')")
+    public ResponseEntity<List<ProductImageResponse>> getAllProductImageWithProductId(@PathVariable Long productId) {
+        return ResponseEntity.status(HttpStatus.OK).body(productImageService.getAllImagesWithProductId(productId));
+    }
+
+    @DeleteMapping("/{productId}/images/{imageId}")
+    @PreAuthorize("hasAnyRole('OWNER', 'CASHIER')")
+    public ResponseEntity<?> deleteProductImageById(@PathVariable Long productId, @PathVariable Long imageId) throws Exception {
+        productImageService.deleteProductImageById(imageId, productId);
+        return ResponseEntity.noContent().build();
+    }
+
+    // product variants
+
+    @GetMapping("/{productId}/variants/{variantId}")
+    @PreAuthorize("hasAnyRole('OWNER', 'CASHIER')")
+    public ResponseEntity<ProductVariantResponse> getProductVariantById(@PathVariable Long productId, @PathVariable Long variantId) {
+        return ResponseEntity.status(HttpStatus.OK).body(productVariantService.getProductVariantById(variantId, productId));
+    }
+
+    @GetMapping("/{productId}/variants")
+    public ResponseEntity<List<ProductVariantResponse>> getAllProductVariantsByProductId(@PathVariable Long productId) {
+        return ResponseEntity.ok(productVariantService.getAllProductVariantsByProductId(productId));
+    }
+
+    @PutMapping("/{productId}/variants/{variantId}")
+    @PreAuthorize("hasAnyRole('OWNER', 'CASHIER')")
+    public ResponseEntity<ProductVariantResponse> updateProductVariantWithProductId(
+        @PathVariable Long productId,
+        @PathVariable Long variantId,
+        @RequestBody ProductVariantRequest request) {
+        return ResponseEntity.status(HttpStatus.OK).body(productVariantService.updateProductVariant(variantId, productId, request));
+    }
+
+    @DeleteMapping("/{productId}/variants/{variantId}")
+    @PreAuthorize("hasAnyRole('OWNER', 'CASHIER')")
+    public ResponseEntity<?> deleteProductVariantById(@PathVariable Long productId, @PathVariable Long variantId) {
+        productVariantService.deleteProductVariantById(variantId, productId);
+        return ResponseEntity.noContent().build();
     }
 }

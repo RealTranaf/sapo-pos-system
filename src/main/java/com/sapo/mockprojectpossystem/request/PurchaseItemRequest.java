@@ -8,6 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PurchaseItemRequest {
-    private Integer productId;
+    private Integer productVariantId;
     private int quantity;
 }

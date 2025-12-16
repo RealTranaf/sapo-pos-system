@@ -13,12 +13,12 @@ public class TypeResponse {
     private Integer id;
     private String name;
     private LocalDateTime createdAt;
-    private List<Integer> productsId;
+    private List<Long> productsId;
 
     public TypeResponse(Type type) {
         this.id = type.getId();
         this.name = type.getName();
         this.createdAt = type.getCreatedAt();
-        this.productsId = type.getProducts().stream().map(Product::getId).collect(Collectors.toList());
+        this.productsId = type.getProducts().stream().map(Product::getId).toList();
     }
 }
