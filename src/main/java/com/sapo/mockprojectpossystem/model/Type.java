@@ -24,7 +24,7 @@ public class Type {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @ManyToMany(mappedBy = "types")
+    @ManyToMany(mappedBy = "types", fetch = FetchType.LAZY)
     private Set<Product> products;
 
     public Type(String name) {

@@ -13,7 +13,7 @@ public class PurchaseItemResponse {
 
     public PurchaseItemResponse(PurchaseItem purchaseItem) {
         this.id = purchaseItem.getId();
-        this.productId = purchaseItem.getProduct().getId();
+        this.productId = purchaseItem.getProductVariant().getId();
         this.purchaseId = purchaseItem.getPurchase().getId();
         this.quantity = purchaseItem.getQuantity();
         this.totalPrice = purchaseItem.getTotalPrice();

@@ -1,7 +1,7 @@
 package com.sapo.mockprojectpossystem.response;
 
-import com.sapo.mockprojectpossystem.model.Brand;
 import com.sapo.mockprojectpossystem.model.Product;
+import com.sapo.mockprojectpossystem.model.Brand;
 import lombok.Data;
 
 import java.time.LocalDateTime;

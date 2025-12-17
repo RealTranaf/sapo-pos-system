@@ -19,6 +19,6 @@ public class TypeResponse {
         this.id = type.getId();
         this.name = type.getName();
         this.createdAt = type.getCreatedAt();
-        this.productsId = type.getProducts().stream().map(Product::getId).collect(Collectors.toList());
+        this.productsId = type.getProducts().stream().map(Product::getId).toList();
     }
 }

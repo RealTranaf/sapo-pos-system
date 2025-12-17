@@ -1,82 +1,80 @@
 package com.sapo.mockprojectpossystem.model;
 
+import com.sapo.mockprojectpossystem.enums.ProductStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
-@Getter
-@Setter
+@Table(name = "products")
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, unique = true)
-    @Size(min = 3, max = 40)
+    @Column(nullable = false)
     private String name;
 
-    @Column(unique = true)
-    private String sku;
+    @Column(columnDefinition = "TEXT")
+    private String summary;
 
-    @Column(unique = true)
-    private String barcode;
+    @Column(columnDefinition = "TEXT")
+    private String content;
 
     @Enumerated(EnumType.STRING)
     private ProductStatus status;
 
-    @Lob
-    @Column(columnDefinition = "TEXT")
-    private String description;
+    @Column(name = "created_by_user_id")
+    private Integer createdByUserId;
 
-    private double basePrice;
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
-    private double sellPrice;
-
-    private int quantity;
-
-    @ManyToOne
-    @JoinColumn(name = "brand_id")
-    private Brand brand;
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     @ManyToMany
     @JoinTable(
-            name = "product_types",
-            joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "type_id")
+        name = "product_types",
+        joinColumns = @JoinColumn(name = "product_id"),
+        inverseJoinColumns = @JoinColumn(name = "type_id")
     )
-    private List<Type> types;
+    private Set<Type> types;
 
-    @OneToMany(mappedBy = "product")
-    private List<PurchaseItem> purchaseItems;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
 
-    @Column(name = "created_at", updatable = false)
-    @CreationTimestamp
-    private LocalDateTime createdAt;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<ProductImage> images;
 
-    @Column(name = "updated_at")
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<ProductVariant> variants;
 
-    public Product(String name, String sku, String barcode,
-                   ProductStatus status, String description,
-                   double basePrice, double sellPrice,
-                   int quantity, Brand brand, List<Type> types) {
-        this.name = name;
-        this.sku = sku;
-        this.barcode = barcode;
-        this.status = status;
-        this.description = description;
-        this.basePrice = basePrice;
-        this.sellPrice = sellPrice;
-        this.quantity = quantity;
-        this.brand = brand;
-        this.types = types;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<ProductOption> options;
+
+    public void addType(Type type) {
+        types.add(type);
+        type.getProducts().add(this);
+    }
+
+    public void removeType(Type type) {
+        types.remove(type);
+        type.getProducts().remove(this);
     }
 }
