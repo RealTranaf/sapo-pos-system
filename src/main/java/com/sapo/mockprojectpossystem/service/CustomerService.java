@@ -53,7 +53,7 @@ public class CustomerService {
     // gender: lấy danh sách customer có gender cần tìm
     // sortBy, sortDir: sorting theo các thuộc tính của customer (kiểm tra class Customer để lấy các thuộc tính)
     public Page<Customer> getAllCustomer(String keyword, int page, int size, String startDate, String endDate,
-                                         double minAmount, double maxAmount,
+                                         Double minAmount, Double maxAmount,
                                          String sortBy, String sortDir, Gender gender) {
         if (sortBy == null || sortBy.isBlank()) {
             sortBy = "createdAt";

@@ -33,8 +33,8 @@ public class CustomerController {
                                              @RequestParam(defaultValue = "10") int size,
                                              @RequestParam(required = false) String startDate,
                                              @RequestParam(required = false) String endDate,
-                                             @RequestParam(required = false) double minAmount,
-                                             @RequestParam(required = false) double maxAmount,
+                                             @RequestParam(required = false) Double minAmount,
+                                             @RequestParam(required = false) Double maxAmount,
                                              @RequestParam(defaultValue = "lastPurchaseDate") String sortBy,
                                              @RequestParam(defaultValue = "desc") String sortDir,
                                              @RequestParam(required = false) Gender gender) {

@@ -42,7 +42,7 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> createAccount(@RequestBody SignUpRequest signUpRequest){
         try{
-            authService.signup(signUpRequest.username, signUpRequest.phoneNum, signUpRequest.name, signUpRequest.password, signUpRequest.isActive, signUpRequest.role);
+            authService.signup(signUpRequest.username, signUpRequest.name, signUpRequest.phoneNum, signUpRequest.password, signUpRequest.isActive, signUpRequest.role);
             return ResponseEntity.ok().body(new MessageResponse("Account created successfully"));
         } catch (RuntimeException e){
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
