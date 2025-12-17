@@ -13,7 +13,7 @@ public class TypeResponse {
     private Integer id;
     private String name;
     private LocalDateTime createdAt;
-    private List<Long> productsId;
+    private List<Integer> productsId;
 
     public TypeResponse(Type type) {
         this.id = type.getId();

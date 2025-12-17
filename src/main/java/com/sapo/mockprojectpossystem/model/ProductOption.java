@@ -37,7 +37,7 @@ public class ProductOption {
     private List<ProductOptionValue> values;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @UpdateTimestamp

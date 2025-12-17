@@ -13,7 +13,7 @@ public class BrandResponse {
     private Integer id;
     private String name;
     private LocalDateTime createdAt;
-    private List<Long> productsId;
+    private List<Integer> productsId;
 
     public BrandResponse(Brand brand) {
         this.id = brand.getId();

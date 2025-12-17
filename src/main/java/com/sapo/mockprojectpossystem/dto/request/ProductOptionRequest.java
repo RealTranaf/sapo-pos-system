@@ -13,9 +13,9 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class ProductOptionRequest {
-    private String name = "Title";
+    private String name;
 
-    private Integer position = 1;
+    private Integer position;
 
     @NotNull(message = "Option values are required.")
     private List<ProductOptionValueRequest> values;

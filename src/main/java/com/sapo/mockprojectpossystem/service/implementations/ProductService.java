@@ -38,7 +38,6 @@ public class ProductService implements IProductService {
     ProductImageRepository productImageRepository;
     IProductMapper productMapper;
     IFileUploadService fileUploadService;
-    ProductVariantRepository productVariantRepository;
     BrandRepository brandRepository;
     TypeRepository typeRepository;
 
@@ -64,7 +63,7 @@ public class ProductService implements IProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public ProductResponse getProductById(Long productId) {
+    public ProductResponse getProductById(Integer productId) {
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new NotFoundException("Product doesn't exist."));
 
@@ -92,7 +91,7 @@ public class ProductService implements IProductService {
 
     @Override
     @Transactional
-    public ProductResponse updateProduct(Long productId, ProductUpdateRequest request) {
+    public ProductResponse updateProduct(Integer productId, ProductUpdateRequest request) {
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new NotFoundException("Product doesn't exist."));
 
@@ -106,7 +105,7 @@ public class ProductService implements IProductService {
 
     @Override
     @Transactional
-    public void deleteProduct(Long productId) {
+    public void deleteProduct(Integer productId) {
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new NotFoundException("Product doesn't exist."));
 

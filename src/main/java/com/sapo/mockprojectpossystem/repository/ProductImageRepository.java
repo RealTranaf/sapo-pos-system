@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ProductImageRepository extends JpaRepository<ProductImage, Long> {
+public interface ProductImageRepository extends JpaRepository<ProductImage, Integer> {
 
-    Optional<ProductImage> findByIdAndProduct_Id(Long id, Long productId);
+    Optional<ProductImage> findByIdAndProduct_Id(Integer id, Integer productId);
 
-    List<ProductImage> findAllByProductId(Long productId);
+    List<ProductImage> findAllByProductId(Integer productId);
 
-    void deleteProductImageByIdAndProduct_id(Long id, Long productId);
+    void deleteProductImageByIdAndProduct_id(Integer id, Integer productId);
 }

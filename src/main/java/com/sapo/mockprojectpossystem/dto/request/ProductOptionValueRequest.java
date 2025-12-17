@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ProductOptionValueRequest {
-    private String value = "Default Title";
+    private String value;
 }

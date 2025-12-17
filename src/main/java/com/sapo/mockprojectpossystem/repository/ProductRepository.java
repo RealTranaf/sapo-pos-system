@@ -9,10 +9,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long> {
+public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("SELECT p FROM Product p LEFT JOIN p.variants v " +
         "WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
         "OR LOWER(v.sku) LIKE LOWER(CONCAT('%', :search, '%')) " +
-        "ORDER BY p.modifiedOn DESC")
+        "ORDER BY p.updatedAt DESC")
     Page<Product> searchByNameOrSku(@Param("search") String search, Pageable pageable);
 }

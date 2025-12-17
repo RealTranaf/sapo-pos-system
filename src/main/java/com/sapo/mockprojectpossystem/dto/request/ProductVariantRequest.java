@@ -22,7 +22,7 @@ public class ProductVariantRequest {
 
     private String title;
 
-    private String option1 = "Default title";
+    private String option1;
 
     private String option2;
 
@@ -34,7 +34,7 @@ public class ProductVariantRequest {
 
     private String unit;
 
-    private Long imageId;
+    private Integer imageId;
 
     private Integer position = 1;
 }

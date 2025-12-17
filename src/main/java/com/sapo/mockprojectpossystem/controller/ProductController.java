@@ -40,7 +40,7 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long productId) {
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable Integer productId) {
         ProductResponse response = productService.getProductById(productId);
         return ResponseEntity.ok(response);
     }
@@ -58,7 +58,7 @@ public class ProductController {
     @PutMapping("/{productId}")
     @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
     public ResponseEntity<ProductResponse> updateProduct(
-        @PathVariable Long productId,
+        @PathVariable Integer productId,
         @Valid @RequestBody ProductUpdateRequest request
     ) {
         ProductResponse response = productService.updateProduct(productId, request);
@@ -67,7 +67,7 @@ public class ProductController {
 
     @DeleteMapping("/{productId}")
     @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable Integer productId) {
         productService.deleteProduct(productId);
         return ResponseEntity.noContent().build();
     }
@@ -75,25 +75,25 @@ public class ProductController {
 
     @PostMapping("/{productId}/images")
     @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
-    public ResponseEntity<ProductImageResponse> createProductImage(@PathVariable Long productId, @RequestPart("image") MultipartFile image) throws IOException {
+    public ResponseEntity<ProductImageResponse> createProductImage(@PathVariable Integer productId, @RequestPart("image") MultipartFile image) throws IOException {
         return ResponseEntity.status(HttpStatus.CREATED).body(productImageService.createProductImage(productId, image));
     }
 
     @GetMapping("/{productId}/images/{imageId}")
     @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
-    public ResponseEntity<ProductImageResponse> getProductImageById(@PathVariable Long productId, @PathVariable Long imageId) {
+    public ResponseEntity<ProductImageResponse> getProductImageById(@PathVariable Integer productId, @PathVariable Integer imageId) {
         return ResponseEntity.status(HttpStatus.OK).body(productImageService.getProductImageById(imageId, productId));
     }
 
     @GetMapping("/{productId}/images")
     @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
-    public ResponseEntity<List<ProductImageResponse>> getAllProductImageWithProductId(@PathVariable Long productId) {
+    public ResponseEntity<List<ProductImageResponse>> getAllProductImageWithProductId(@PathVariable Integer productId) {
         return ResponseEntity.status(HttpStatus.OK).body(productImageService.getAllImagesWithProductId(productId));
     }
 
     @DeleteMapping("/{productId}/images/{imageId}")
     @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
-    public ResponseEntity<?> deleteProductImageById(@PathVariable Long productId, @PathVariable Long imageId) throws Exception {
+    public ResponseEntity<?> deleteProductImageById(@PathVariable Integer productId, @PathVariable Integer imageId) throws Exception {
         productImageService.deleteProductImageById(imageId, productId);
         return ResponseEntity.noContent().build();
     }
@@ -102,27 +102,27 @@ public class ProductController {
 
     @GetMapping("/{productId}/variants/{variantId}")
     @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
-    public ResponseEntity<ProductVariantResponse> getProductVariantById(@PathVariable Long productId, @PathVariable Long variantId) {
+    public ResponseEntity<ProductVariantResponse> getProductVariantById(@PathVariable Integer productId, @PathVariable Integer variantId) {
         return ResponseEntity.status(HttpStatus.OK).body(productVariantService.getProductVariantById(variantId, productId));
     }
 
     @GetMapping("/{productId}/variants")
-    public ResponseEntity<List<ProductVariantResponse>> getAllProductVariantsByProductId(@PathVariable Long productId) {
+    public ResponseEntity<List<ProductVariantResponse>> getAllProductVariantsByProductId(@PathVariable Integer productId) {
         return ResponseEntity.ok(productVariantService.getAllProductVariantsByProductId(productId));
     }
 
     @PutMapping("/{productId}/variants/{variantId}")
     @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
     public ResponseEntity<ProductVariantResponse> updateProductVariantWithProductId(
-        @PathVariable Long productId,
-        @PathVariable Long variantId,
+        @PathVariable Integer productId,
+        @PathVariable Integer variantId,
         @RequestBody ProductVariantRequest request) {
         return ResponseEntity.status(HttpStatus.OK).body(productVariantService.updateProductVariant(variantId, productId, request));
     }
 
     @DeleteMapping("/{productId}/variants/{variantId}")
     @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
-    public ResponseEntity<?> deleteProductVariantById(@PathVariable Long productId, @PathVariable Long variantId) {
+    public ResponseEntity<?> deleteProductVariantById(@PathVariable Integer productId, @PathVariable Integer variantId) {
         productVariantService.deleteProductVariantById(variantId, productId);
         return ResponseEntity.noContent().build();
     }

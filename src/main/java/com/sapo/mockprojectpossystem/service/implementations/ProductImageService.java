@@ -32,7 +32,7 @@ public class ProductImageService implements IProductImageService {
 
     @Override
     @Transactional
-    public ProductImageResponse createProductImage(Long productId, MultipartFile image) throws IOException {
+    public ProductImageResponse createProductImage(Integer productId, MultipartFile image) throws IOException {
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new NotFoundException("Not found product with product id: " + productId));
 
@@ -56,21 +56,21 @@ public class ProductImageService implements IProductImageService {
     }
 
     @Override
-    public ProductImageResponse getProductImageById(Long id, Long productId) {
+    public ProductImageResponse getProductImageById(Integer id, Integer productId) {
         ProductImage image = productImageRepository.findByIdAndProduct_Id(id, productId)
             .orElseThrow(() -> new NotFoundException("Not found image with id: " + id + " and product id: " + productId));
         return productMapper.imageToResponse(image);
     }
 
     @Override
-    public List<ProductImageResponse> getAllImagesWithProductId(Long productId) {
+    public List<ProductImageResponse> getAllImagesWithProductId(Integer productId) {
         return productImageRepository.
             findAllByProductId(productId).stream().map(
                 productMapper::imageToResponse).toList();
     }
 
     @Override
-    public void deleteProductImageById(Long id, Long productId) throws Exception {
+    public void deleteProductImageById(Integer id, Integer productId) throws Exception {
         ProductImage productImage = productImageRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Not found product image with id: " + id));
 

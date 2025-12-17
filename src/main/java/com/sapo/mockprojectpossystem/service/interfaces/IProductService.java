@@ -13,11 +13,11 @@ import java.util.List;
 public interface IProductService {
     PaginatedResponse<ProductResponse> getOrSearchProducts(ProductSearchRequest request);
 
-    ProductResponse getProductById(Long productId);
+    ProductResponse getProductById(Integer productId);
 
     ProductResponse createProduct(ProductCreateRequest request, List<MultipartFile> images) throws IOException;
 
-    ProductResponse updateProduct(Long productId, ProductUpdateRequest request);
+    ProductResponse updateProduct(Integer productId, ProductUpdateRequest request);
 
-    void deleteProduct(Long productId);
+    void deleteProduct(Integer productId);
 }
