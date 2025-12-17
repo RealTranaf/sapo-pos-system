@@ -13,8 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class ProductOptionRequest {
-    private Long id;
-
     private String name = "Title";
 
     private Integer position = 1;

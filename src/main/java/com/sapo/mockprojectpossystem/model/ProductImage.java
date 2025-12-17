@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -21,7 +21,7 @@ public class ProductImage {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
@@ -33,10 +33,9 @@ public class ProductImage {
     @Column(nullable = false)
     private Integer position;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String src;
 
-    @Column(nullable = false)
     private String alt;
 
     @Column(nullable = false)
@@ -48,17 +47,15 @@ public class ProductImage {
     @Column(nullable = false)
     private Integer size;
 
-    @Column(nullable = false)
     private Integer width;
 
-    @Column(nullable = false)
     private Integer height;
 
     @CreationTimestamp
-    @Column(name = "created_on", nullable = false, updatable = false)
-    private Instant createdOn;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "modified_on")
-    private Instant modifiedOn;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }

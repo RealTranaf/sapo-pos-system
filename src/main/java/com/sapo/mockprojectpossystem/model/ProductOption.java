@@ -21,7 +21,7 @@ public class ProductOption {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
@@ -37,10 +37,10 @@ public class ProductOption {
     private List<ProductOptionValue> values;
 
     @CreationTimestamp
-    @Column(name = "created_on", nullable = false, updatable = false)
-    private LocalDateTime createdOn;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "modified_on")
-    private LocalDateTime modifiedOn;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }

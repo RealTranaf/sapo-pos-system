@@ -46,7 +46,7 @@ public class ProductController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('OWNER', 'CASHIER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
     public ResponseEntity<ProductResponse> createProduct(
         @Valid @RequestPart("product") ProductCreateRequest request,
         @RequestPart(value = "images", required = false) List<MultipartFile> images
@@ -56,7 +56,7 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
-    @PreAuthorize("hasAnyRole('OWNER', 'CASHIER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
     public ResponseEntity<ProductResponse> updateProduct(
         @PathVariable Long productId,
         @Valid @RequestBody ProductUpdateRequest request
@@ -66,7 +66,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{productId}")
-    @PreAuthorize("hasAnyRole('OWNER', 'CASHIER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
         productService.deleteProduct(productId);
         return ResponseEntity.noContent().build();
@@ -74,25 +74,25 @@ public class ProductController {
     // product images
 
     @PostMapping("/{productId}/images")
-    @PreAuthorize("hasAnyRole('OWNER', 'CASHIER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
     public ResponseEntity<ProductImageResponse> createProductImage(@PathVariable Long productId, @RequestPart("image") MultipartFile image) throws IOException {
         return ResponseEntity.status(HttpStatus.CREATED).body(productImageService.createProductImage(productId, image));
     }
 
     @GetMapping("/{productId}/images/{imageId}")
-    @PreAuthorize("hasAnyRole('OWNER', 'CASHIER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
     public ResponseEntity<ProductImageResponse> getProductImageById(@PathVariable Long productId, @PathVariable Long imageId) {
         return ResponseEntity.status(HttpStatus.OK).body(productImageService.getProductImageById(imageId, productId));
     }
 
     @GetMapping("/{productId}/images")
-    @PreAuthorize("hasAnyRole('OWNER', 'CASHIER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
     public ResponseEntity<List<ProductImageResponse>> getAllProductImageWithProductId(@PathVariable Long productId) {
         return ResponseEntity.status(HttpStatus.OK).body(productImageService.getAllImagesWithProductId(productId));
     }
 
     @DeleteMapping("/{productId}/images/{imageId}")
-    @PreAuthorize("hasAnyRole('OWNER', 'CASHIER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
     public ResponseEntity<?> deleteProductImageById(@PathVariable Long productId, @PathVariable Long imageId) throws Exception {
         productImageService.deleteProductImageById(imageId, productId);
         return ResponseEntity.noContent().build();
@@ -101,7 +101,7 @@ public class ProductController {
     // product variants
 
     @GetMapping("/{productId}/variants/{variantId}")
-    @PreAuthorize("hasAnyRole('OWNER', 'CASHIER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
     public ResponseEntity<ProductVariantResponse> getProductVariantById(@PathVariable Long productId, @PathVariable Long variantId) {
         return ResponseEntity.status(HttpStatus.OK).body(productVariantService.getProductVariantById(variantId, productId));
     }
@@ -112,7 +112,7 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}/variants/{variantId}")
-    @PreAuthorize("hasAnyRole('OWNER', 'CASHIER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
     public ResponseEntity<ProductVariantResponse> updateProductVariantWithProductId(
         @PathVariable Long productId,
         @PathVariable Long variantId,
@@ -121,7 +121,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{productId}/variants/{variantId}")
-    @PreAuthorize("hasAnyRole('OWNER', 'CASHIER')")
+    @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
     public ResponseEntity<?> deleteProductVariantById(@PathVariable Long productId, @PathVariable Long variantId) {
         productVariantService.deleteProductVariantById(variantId, productId);
         return ResponseEntity.noContent().build();

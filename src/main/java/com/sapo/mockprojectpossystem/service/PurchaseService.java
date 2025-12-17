@@ -87,7 +87,7 @@ public class PurchaseService {
         for (PurchaseItemRequest itemReq : purchaseRequest.getPurchaseItems()) {
             ProductVariant product = productVariantRepository.findById(Long.parseLong(String.valueOf(itemReq.getProductVariantId())))
                     .orElseThrow(() -> new RuntimeException("Product not found: " + itemReq.getProductVariantId()));
-            double itemTotal = product.getPrice().doubleValue() * itemReq.getQuantity();
+            double itemTotal = product.getPrice() * itemReq.getQuantity();
             PurchaseItem item = new PurchaseItem(product, purchase, itemReq.getQuantity());
             item.setTotalPrice(itemTotal);
             items.add(item);

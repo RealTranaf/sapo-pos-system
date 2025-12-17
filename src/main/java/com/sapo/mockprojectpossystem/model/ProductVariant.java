@@ -8,8 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "product_variants")
@@ -21,7 +20,7 @@ public class ProductVariant {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
@@ -33,16 +32,15 @@ public class ProductVariant {
 
     private String barcode;
 
-    @Column(nullable = false, unique = true)
     private String sku;
 
-    private BigDecimal price;
+    private Double price;
 
     @Column(name = "base_price")
-    private BigDecimal basePrice;
+    private Double basePrice;
 
     @Column(name = "compare_at_price")
-    private BigDecimal compareAtPrice;
+    private Double compareAtPrice;
 
     @Column(name = "option1")
     private String option1;
@@ -53,26 +51,23 @@ public class ProductVariant {
     @Column(name = "option3")
     private String option3;
 
-    @Column(nullable = false)
     private Boolean taxable;
 
     @Column(name = "inventory_quantity")
     private Integer inventoryQuantity;
 
-    @Column(nullable = false)
     private String unit;
 
     @Column(nullable = false)
     private Integer position;
 
-    @Column(nullable = false)
     private String title;
 
     @CreationTimestamp
     @Column(name = "created_on", nullable = false, updatable = false)
-    private Instant createdOn;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "modified_on")
-    private Instant modifiedOn;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }

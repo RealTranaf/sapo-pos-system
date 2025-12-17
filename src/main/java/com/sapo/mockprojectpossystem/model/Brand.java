@@ -25,10 +25,20 @@ public class Brand {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Product> products;
 
     public Brand(String name) {
         this.name = name;
+    }
+
+    public void addProduct(Product product) {
+        products.add(product);
+        product.setBrand(this);
+    }
+
+    public void removeProduct(Product product) {
+        products.remove(product);
+        product.setBrand(null);
     }
 }

@@ -9,10 +9,7 @@ import com.sapo.mockprojectpossystem.exception.DeleteCloudinaryFileException;
 import com.sapo.mockprojectpossystem.exception.InvalidException;
 import com.sapo.mockprojectpossystem.exception.NotFoundException;
 import com.sapo.mockprojectpossystem.mapper.IProductMapper;
-import com.sapo.mockprojectpossystem.repository.BrandRepository;
-import com.sapo.mockprojectpossystem.repository.ProductImageRepository;
-import com.sapo.mockprojectpossystem.repository.ProductRepository;
-import com.sapo.mockprojectpossystem.repository.TypeRepository;
+import com.sapo.mockprojectpossystem.repository.*;
 import com.sapo.mockprojectpossystem.service.interfaces.IFileUploadService;
 import com.sapo.mockprojectpossystem.service.interfaces.IProductService;
 import lombok.AccessLevel;
@@ -41,6 +38,7 @@ public class ProductService implements IProductService {
     ProductImageRepository productImageRepository;
     IProductMapper productMapper;
     IFileUploadService fileUploadService;
+    ProductVariantRepository productVariantRepository;
     BrandRepository brandRepository;
     TypeRepository typeRepository;
 
@@ -80,8 +78,12 @@ public class ProductService implements IProductService {
 
         applyBrand(product, request.getBrandId());
         applyTypes(product, request.getTypeIds());
-        applyOptions(product, request.getOptions());
-        applyVariants(product, request.getVariants());
+        createOptions(product, request.getOptions());
+        if (request.getOptions() == null || request.getOptions().isEmpty()
+            || request.getVariants() == null || request.getVariants().isEmpty()) {
+            setDefaultValueForVariant(product);
+        } else
+            createVariants(product, request.getVariants());
         applyImages(product, images);
 
         Product savedProduct = productRepository.save(product);
@@ -140,6 +142,8 @@ public class ProductService implements IProductService {
         if (request.getSummary() != null) product.setSummary(request.getSummary());
         if (request.getContent() != null) product.setContent(request.getContent());
         if (request.getStatus() != null) product.setStatus(request.getStatus());
+        applyBrand(product, request.getBrandId());
+        applyTypes(product, request.getTypeIds());
         applyVariants(product, request.getVariants());
         applyOptions(product, request.getOptions());
     }
@@ -170,18 +174,21 @@ public class ProductService implements IProductService {
         product.setImages(imagesList);
     }
 
-    private void applyOptions(Product product, List<ProductOptionRequest> optionRequests) {
-        if (product.getOptions() == null) {
-            product.setOptions(new ArrayList<>());
-        }
-
-        if (optionRequests == null || optionRequests.isEmpty()) {
-            product.getOptions().clear();
+    // create option
+    private void createOptions(Product product, List<ProductOptionRequest> requests) {
+        if (requests == null || requests.isEmpty()) {
+            // set default value for options and optionValues;
+            setDefaultValueForOptionAndOptionValue(product);
             return;
         }
 
-        product.getOptions().clear();
-        List<ProductOption> productOptions = optionRequests.stream().map(optionRequest -> {
+        product.setOptions(new ArrayList<>());
+        bindingOptionAndValueRequest(product, requests);
+    }
+
+    // binding Option And Value Request
+    private void bindingOptionAndValueRequest(Product product, List<ProductOptionRequest> requests) {
+        List<ProductOption> productOptions = requests.stream().map(optionRequest -> {
             ProductOption productOption = productMapper.optionRequestToEntity(optionRequest);
             productOption.getValues().forEach(optionValue -> optionValue.setOption(productOption));
             productOption.setProduct(product);
@@ -191,14 +198,81 @@ public class ProductService implements IProductService {
         product.getOptions().addAll(productOptions);
     }
 
-    private void applyVariants(Product product, List<ProductVariantRequest> variantRequests) {
-        if (product.getVariants() == null) {
-            product.setVariants(new ArrayList<>());
+    // create variant
+    private void createVariants(Product product, List<ProductVariantRequest> requests) {
+        product.setVariants(new ArrayList<>());
+
+        List<ProductVariant> productVariants = requests.stream().map(request -> {
+            ProductVariant variant = productMapper.variantRequestToEntity(request);
+            variant.setProduct(product);
+            return variant;
+        }).toList();
+
+        product.getVariants().addAll(productVariants);
+    }
+
+    // set default value for option and optionValue
+    private void setDefaultValueForOptionAndOptionValue(Product product) {
+        product.setOptions(new ArrayList<>());
+
+        ProductOption productOption = ProductOption.builder()
+            .name("Title")
+            .position(1)
+            .values(new ArrayList<>())
+            .product(product)
+            .build();
+
+        ProductOptionValue productOptionValue = ProductOptionValue.builder()
+            .value("Default Title")
+            .option(productOption)
+            .build();
+
+        productOption.getValues().add(productOptionValue);
+        product.getOptions().add(productOption);
+    }
+
+    // set default value for variant
+    private void setDefaultValueForVariant(Product product) {
+        product.setVariants(new ArrayList<>());
+
+        ProductVariant productVariant = ProductVariant.builder()
+            .title("Default Title")
+            .option1("Default Title")
+            .position(1)
+            .product(product)
+            .build();
+
+        product.getVariants().add(productVariant);
+    }
+
+    // update options, valueOptions
+    private void applyOptions(Product product, List<ProductOptionRequest> optionRequests) {
+        // no request do nothing
+        if (optionRequests == null) {
+            return;
         }
 
-        if (variantRequests == null || variantRequests.isEmpty()) {
-            product.getVariants().clear();
+        // empty list means delete
+        if (optionRequests.isEmpty()) {
+            product.getOptions().clear();
+            setDefaultValueForOptionAndOptionValue(product);
             return;
+        }
+
+        product.getOptions().clear();
+        bindingOptionAndValueRequest(product, optionRequests);
+    }
+
+    // update variant
+    private void applyVariants(Product product, List<ProductVariantRequest> variantRequests) {
+        // have no variant request -> do nothing
+        if (variantRequests == null) {
+            return;
+        }
+
+        if (variantRequests.isEmpty()) {
+            product.getVariants().clear();
+            setDefaultValueForVariant(product);
         }
 
         product.getVariants().clear();
@@ -222,13 +296,31 @@ public class ProductService implements IProductService {
             return;
         }
 
-        Brand brand = brandRepository.findById(brandId)
+        if (brandId < 0) {
+            Brand oldBrand = product.getBrand();
+            if (oldBrand == null) {
+                return;
+            }
+            oldBrand.removeProduct(product);
+            return;
+        }
+
+        Brand newBrand = brandRepository.findById(brandId)
             .orElseThrow(() -> new NotFoundException("Not found brand with id: " + brandId));
-        if (brand.getProducts().isEmpty()) {
-            brand.setProducts(List.of(product));
-        } else
-            brand.getProducts().add(product);
-        product.setBrand(brand);
+
+        Brand oldBrand = product.getBrand();
+
+        if (oldBrand != null && oldBrand.getId().equals(newBrand.getId())) {
+            return;
+        }
+
+        if (oldBrand == null) {
+            newBrand.addProduct(product);
+            return;
+        }
+
+        oldBrand.removeProduct(product);
+        newBrand.addProduct(product);
     }
 
     void applyTypes(Product product, Set<Integer> typeIds) {
@@ -236,24 +328,35 @@ public class ProductService implements IProductService {
             product.setTypes(new HashSet<>());
         }
 
-        if (typeIds.isEmpty()) {
-            product.getTypes().clear();
+        if (typeIds == null) {
             return;
         }
 
-        Set<Type> types = new HashSet<>();
+        if (typeIds.isEmpty()) {
+            for (Type type : new HashSet<>(product.getTypes())) {
+                product.removeType(type);
+            }
+            return;
+        }
 
-        typeIds.forEach(typeId -> {
+        // Remove if old type are not in new typeIds
+        if (!product.getTypes().isEmpty()) {
+            Set<Type> existingTypes = new HashSet<>(product.getTypes());
+            for (Type oldType : existingTypes) {
+                if (!typeIds.contains(oldType.getId())) {
+                    product.removeType(oldType);
+                }
+            }
+        }
+
+        // Add new types
+        for (Integer typeId : typeIds) {
             Type type = typeRepository.findById(typeId)
                 .orElseThrow(() -> new NotFoundException("Not found type with id: " + typeId));
-            if (type.getProducts().isEmpty()) {
-                type.setProducts(Set.of(product));
-            }
-            else
-                type.getProducts().add(product);
-            types.add(type);
-        });
 
-        product.setTypes(types);
+            if (!product.getTypes().contains(type)) {
+                product.addType(type);
+            }
+        }
     }
 }

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -22,7 +22,7 @@ import java.util.Set;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(nullable = false)
     private String name;
@@ -37,15 +37,15 @@ public class Product {
     private ProductStatus status;
 
     @Column(name = "created_by_user_id")
-    private Long createdByUserId;
+    private Integer createdByUserId;
 
     @CreationTimestamp
-    @Column(name = "created_on", nullable = false, updatable = false)
-    private Instant createdOn;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "modified_on")
-    private Instant modifiedOn;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     @ManyToMany
     @JoinTable(
@@ -67,4 +67,14 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ProductOption> options;
+
+    public void addType(Type type) {
+        types.add(type);
+        type.getProducts().add(this);
+    }
+
+    public void removeType(Type type) {
+        types.remove(type);
+        type.getProducts().remove(this);
+    }
 }
