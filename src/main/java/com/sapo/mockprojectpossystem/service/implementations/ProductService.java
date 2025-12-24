@@ -4,6 +4,7 @@ import com.sapo.mockprojectpossystem.dto.request.*;
 import com.sapo.mockprojectpossystem.dto.response.FileUploadResponse;
 import com.sapo.mockprojectpossystem.dto.response.PaginatedResponse;
 import com.sapo.mockprojectpossystem.dto.response.ProductResponse;
+import com.sapo.mockprojectpossystem.enums.ProductStatus;
 import com.sapo.mockprojectpossystem.model.*;
 import com.sapo.mockprojectpossystem.exception.DeleteCloudinaryFileException;
 import com.sapo.mockprojectpossystem.exception.InvalidException;
@@ -51,13 +52,9 @@ public class ProductService implements IProductService {
 
         Sort.Direction direction = order.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(page, limit, Sort.by(direction, sortBy));
-
-        if (search != null && !search.isBlank()) {
-            Page<Product> productPage = productRepository.searchByNameOrSku(search, pageable);
-
-            return buildPaginatedResponse(productPage, page, limit);
-        }
-        Page<Product> productPage = productRepository.findAll(pageable);
+        Integer brandId = request.getBrandId();
+        List<Integer> typeIds = request.getTypeIds();
+        Page<Product> productPage = productRepository.searchProducts(search, brandId, typeIds, pageable);
         return buildPaginatedResponse(productPage, page, limit);
     }
 
@@ -66,6 +63,10 @@ public class ProductService implements IProductService {
     public ProductResponse getProductById(Integer productId) {
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new NotFoundException("Product doesn't exist."));
+
+        if (!product.getStatus().getValue().equalsIgnoreCase("ACTIVE") ) {
+            throw new NotFoundException("Product doesn't exist.");
+        }
 
         return productMapper.toResponse(product);
     }
@@ -95,6 +96,10 @@ public class ProductService implements IProductService {
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new NotFoundException("Product doesn't exist."));
 
+        if (!product.getStatus().getValue().equalsIgnoreCase("ACTIVE") ) {
+            throw new NotFoundException("Product doesn't exist.");
+        }
+
         applyBrand(product, request.getBrandId());
         applyTypes(product, request.getTypeIds());
 
@@ -109,15 +114,7 @@ public class ProductService implements IProductService {
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new NotFoundException("Product doesn't exist."));
 
-        product.getImages().forEach((image) -> {
-            try {
-                fileUploadService.deleteFile(image.getAssetId());
-            } catch (Exception e) {
-                throw new DeleteCloudinaryFileException(e);
-            }
-        });
-
-        productRepository.delete(product);
+        productRepository.save(product);
     }
 
     private PaginatedResponse<ProductResponse> buildPaginatedResponse(Page<Product> productPage, Integer page, Integer size) {

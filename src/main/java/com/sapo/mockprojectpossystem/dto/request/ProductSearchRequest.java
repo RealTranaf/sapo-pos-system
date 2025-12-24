@@ -10,6 +10,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,10 +24,14 @@ public class ProductSearchRequest {
     Integer limit = 20;
 
     @ValidSortBy(entity = Product.class)
-    String sortBy = "modifiedOn";
+    String sortBy = "updatedAt";
 
     @Pattern(regexp = "asc|desc", message = "Order must be asc or desc.")
     String order = "asc";
 
     private String search;
+
+    private Integer brandId;
+
+    private List<Integer> typeIds;
 }

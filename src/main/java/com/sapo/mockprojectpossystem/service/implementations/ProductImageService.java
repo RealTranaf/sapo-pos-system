@@ -36,6 +36,10 @@ public class ProductImageService implements IProductImageService {
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new NotFoundException("Not found product with product id: " + productId));
 
+        if (!product.getStatus().getValue().equalsIgnoreCase("ACTIVE") ) {
+            throw new NotFoundException("Product doesn't exist.");
+        }
+
         FileUploadResponse fileUploadResponse = fileUploadService.uploadImageFile(image);
         int position = 1;
         if (!product.getImages().isEmpty()) {
@@ -59,6 +63,11 @@ public class ProductImageService implements IProductImageService {
     public ProductImageResponse getProductImageById(Integer id, Integer productId) {
         ProductImage image = productImageRepository.findByIdAndProduct_Id(id, productId)
             .orElseThrow(() -> new NotFoundException("Not found image with id: " + id + " and product id: " + productId));
+
+        if (!image.getProduct().getStatus().getValue().equalsIgnoreCase("ACTIVE")) {
+            throw new NotFoundException("Not found image with id: " + id + " and product id: " + productId);
+        }
+
         return productMapper.imageToResponse(image);
     }
 
@@ -73,6 +82,10 @@ public class ProductImageService implements IProductImageService {
     public void deleteProductImageById(Integer id, Integer productId) throws Exception {
         ProductImage productImage = productImageRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Not found product image with id: " + id));
+
+        if (!productImage.getProduct().getStatus().getValue().equalsIgnoreCase("ACTIVE")) {
+            throw new NotFoundException("Not found image with id: " + id + " and product id: " + productId);
+        }
 
         fileUploadService.deleteFile(productImage.getAssetId());
 

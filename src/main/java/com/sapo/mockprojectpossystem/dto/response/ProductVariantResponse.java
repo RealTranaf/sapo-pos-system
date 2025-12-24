@@ -28,6 +28,9 @@ public class ProductVariantResponse {
     @JsonProperty("compare_at_price")
     private BigDecimal compareAtPrice;
 
+    @JsonProperty("base_price")
+    private BigDecimal basePrice;
+
     @JsonProperty("title")
     private String title;
 
