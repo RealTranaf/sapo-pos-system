@@ -1,6 +1,5 @@
 package com.sapo.mockprojectpossystem.service;
 
-import com.sapo.mockprojectpossystem.model.Customer;
 import com.sapo.mockprojectpossystem.model.Role;
 import com.sapo.mockprojectpossystem.model.User;
 import com.sapo.mockprojectpossystem.repository.UserRepository;

@@ -1,10 +1,7 @@
 package com.sapo.mockprojectpossystem.controller;
 
-import com.sapo.mockprojectpossystem.model.Customer;
-import com.sapo.mockprojectpossystem.model.Gender;
 import com.sapo.mockprojectpossystem.model.Role;
 import com.sapo.mockprojectpossystem.model.User;
-import com.sapo.mockprojectpossystem.response.CustomerResponse;
 import com.sapo.mockprojectpossystem.response.MessageResponse;
 import com.sapo.mockprojectpossystem.response.UserResponse;
 import com.sapo.mockprojectpossystem.service.UserService;

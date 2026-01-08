@@ -1,22 +1,26 @@
-package com.sapo.mockprojectpossystem.response;
+package com.sapo.mockprojectpossystem.customer.interfaces;
 
-import com.sapo.mockprojectpossystem.model.Customer;
-import com.sapo.mockprojectpossystem.model.Gender;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonRootName;
+import com.sapo.mockprojectpossystem.customer.domain.model.Customer;
+import com.sapo.mockprojectpossystem.customer.domain.model.Gender;
+import com.sapo.mockprojectpossystem.response.PurchaseResponse;
+import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Data
+@Getter
+@NoArgsConstructor
+@JsonRootName("customer")
 public class CustomerResponse {
     private Integer id;
     private String name;
     private String phoneNum;
-    private String note;
     private Gender gender;
-    private LocalDateTime createdAt;
-    private LocalDateTime lastPurchaseDate;
+    private String note;
+    private Instant createdOn;
+    private Instant lastPurchaseDate;
     private double totalPurchaseAmount;
     private List<PurchaseResponse> purchases;
 
@@ -24,9 +28,9 @@ public class CustomerResponse {
         this.id = customer.getId();
         this.name = customer.getName();
         this.phoneNum = customer.getPhoneNum();
-        this.note = customer.getNote();
         this.gender = customer.getGender();
-        this.createdAt = customer.getCreatedAt();
+        this.note = customer.getNote();
+        this.createdOn = customer.getCreatedOn();
         this.lastPurchaseDate = customer.getLastPurchaseDate();
         this.totalPurchaseAmount = customer.getTotalPurchaseAmount();
         this.purchases = customer.getPurchases().stream().map(PurchaseResponse::new).collect(Collectors.toList());

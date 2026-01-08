@@ -1,6 +1,6 @@
 package com.sapo.mockprojectpossystem.repository;
 
-import com.sapo.mockprojectpossystem.model.Customer;
+import com.sapo.mockprojectpossystem.customer.domain.model.Customer;
 import com.sapo.mockprojectpossystem.model.Purchase;
 import com.sapo.mockprojectpossystem.model.PurchaseItem;
 import com.sapo.mockprojectpossystem.model.User;

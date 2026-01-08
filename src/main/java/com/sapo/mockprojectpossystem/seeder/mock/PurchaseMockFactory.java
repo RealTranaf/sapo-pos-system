@@ -1,5 +1,6 @@
 package com.sapo.mockprojectpossystem.seeder.mock;
 
+import com.sapo.mockprojectpossystem.customer.domain.model.Customer;
 import com.sapo.mockprojectpossystem.model.*;
 
 import java.util.ArrayList;

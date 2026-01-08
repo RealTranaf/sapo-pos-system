@@ -1,6 +1,5 @@
-package com.sapo.mockprojectpossystem.model;
+package com.sapo.mockprojectpossystem.customer.domain.model;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

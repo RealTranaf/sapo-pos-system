@@ -1,5 +1,6 @@
 package com.sapo.mockprojectpossystem.model;
 
+import com.sapo.mockprojectpossystem.customer.domain.model.Customer;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

@@ -1,11 +1,15 @@
 package com.sapo.mockprojectpossystem.seeder;
 
+import com.sapo.mockprojectpossystem.customer.domain.model.Customer;
+import com.sapo.mockprojectpossystem.customer.domain.repository.CustomerRepository;
 import com.sapo.mockprojectpossystem.repository.*;
 import com.sapo.mockprojectpossystem.seeder.mock.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @Profile("dev")
@@ -42,7 +46,11 @@ public class DevDatabaseSeeder implements CommandLineRunner {
         }
 
         if (customerRepository.count() == 0) {
-            customerRepository.saveAll(CustomerMockFactory.all());
+            int count = 20;
+            List<Customer> customers = CustomerMockFactory.generate(count);
+            for (int i = 0; i < count; i++) {
+                customerRepository.save(customers.get(i));
+            }
             System.out.println("✅ Seeded CUSTOMERS");
         }
 

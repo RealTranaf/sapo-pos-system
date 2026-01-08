@@ -1,5 +1,7 @@
 package com.sapo.mockprojectpossystem.service;
 
+import com.sapo.mockprojectpossystem.customer.domain.model.Customer;
+import com.sapo.mockprojectpossystem.customer.domain.repository.CustomerRepository;
 import com.sapo.mockprojectpossystem.model.*;
 import com.sapo.mockprojectpossystem.repository.*;
 import com.sapo.mockprojectpossystem.request.PurchaseItemRequest;
@@ -97,9 +99,9 @@ public class PurchaseService {
         purchase.setPurchaseItems(items);
         purchaseRepository.save(purchase);
 
-        double tempTotal = customer.getTotalPurchaseAmount() + purchase.getTotalAmount();
-        customer.setLastPurchaseDate(LocalDateTime.now());
-        customer.setTotalPurchaseAmount(tempTotal);
+//        double tempTotal = customer.getTotalPurchaseAmount() + purchase.getTotalAmount();
+//        customer.setLastPurchaseDate(LocalDateTime.now());
+//        customer.setTotalPurchaseAmount(tempTotal);
         customerRepository.save(customer);
     }
 

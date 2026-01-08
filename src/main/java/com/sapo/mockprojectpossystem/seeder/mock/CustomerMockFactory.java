@@ -1,32 +1,34 @@
 package com.sapo.mockprojectpossystem.seeder.mock;
 
-import com.sapo.mockprojectpossystem.model.Customer;
-import com.sapo.mockprojectpossystem.model.Gender;
+import com.sapo.mockprojectpossystem.customer.domain.model.Customer;
+import com.sapo.mockprojectpossystem.customer.domain.model.Gender;
+import com.sapo.mockprojectpossystem.customer.domain.model.PhoneNumber;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class CustomerMockFactory {
 
-    private static final Random random = new Random();
+    private static final Random RANDOM = new Random();
+    // Cần refactor
 
-    public static List<Customer> all() {
-        List<Customer> customers = new ArrayList<>();
+    public static List<Customer> generate(int count) {
+        return IntStream.rangeClosed(1, count)
+                .mapToObj(CustomerMockFactory::createCustomer)
+                .collect(Collectors.toList());
+    }
 
-        for (int i = 1; i <= 1000; i++) {
-            Customer c = new Customer();
-            c.setName("Customer " + i);
-            c.setPhoneNum(generatePhoneNum(i));
-            c.setGender(randomGender());
-            c.setNote("Mock customer #" + i);
-            c.setCreatedAt(LocalDateTime.now().minusDays(random.nextInt(365)));
+    private static Customer createCustomer(int index) {
+        var customer = Customer.create(
+                "Customer " + index,
+                new PhoneNumber(generatePhoneNum(index)),
+                randomGender(),
+                "Mock customer #" + index
+        );
 
-            customers.add(c);
-        }
-
-        return customers;
+        return customer;
     }
 
     private static String generatePhoneNum(int index) {
@@ -34,7 +36,7 @@ public class CustomerMockFactory {
     }
 
     private static Gender randomGender() {
-        int r = random.nextInt(3);
+        int r = RANDOM.nextInt(3);
         switch (r) {
             case 0: return Gender.MALE;
             case 1: return Gender.FEMALE;

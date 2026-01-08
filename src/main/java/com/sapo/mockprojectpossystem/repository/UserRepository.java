@@ -1,6 +1,5 @@
 package com.sapo.mockprojectpossystem.repository;
 
-import com.sapo.mockprojectpossystem.model.Customer;
 import com.sapo.mockprojectpossystem.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
