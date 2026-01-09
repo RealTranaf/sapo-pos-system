@@ -1,8 +1,8 @@
 package com.sapo.mockprojectpossystem.seeder.mock;
 
-import com.sapo.mockprojectpossystem.model.Product;
-import com.sapo.mockprojectpossystem.model.ProductOption;
-import com.sapo.mockprojectpossystem.model.ProductOptionValue;
+import com.sapo.mockprojectpossystem.product.domain.model.Product;
+import com.sapo.mockprojectpossystem.product.domain.model.ProductOption;
+import com.sapo.mockprojectpossystem.product.domain.model.ProductOptionValue;
 
 import java.util.List;
 

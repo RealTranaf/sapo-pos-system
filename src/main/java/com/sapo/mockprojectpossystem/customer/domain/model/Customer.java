@@ -1,12 +1,16 @@
 package com.sapo.mockprojectpossystem.customer.domain.model;
 
-import com.sapo.mockprojectpossystem.model.Purchase;
+import com.sapo.mockprojectpossystem.customer.domain.enums.Gender;
+import com.sapo.mockprojectpossystem.purchase.domain.model.Purchase;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import static com.sapo.mockprojectpossystem.customer.validation.CustomerValidation.validateCustomer;
 
 @Entity
 @Table(name = "customers")
@@ -17,15 +21,21 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private String phoneNum;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @Column(updatable = false, nullable = false)
+    @CreationTimestamp
     private Instant createdOn;
 
+    @UpdateTimestamp
     private Instant modifiedOn;
 
     @Lob
@@ -43,21 +53,21 @@ public class Customer {
     }
 
     private Customer(String name, PhoneNumber phoneNumber, Gender gender, String note) {
-        validateName(name);
+        validateCustomer(name, phoneNumber.getValue());
         this.name = name.trim();
         this.phoneNum = phoneNumber.getValue();
         this.gender = gender == null ? Gender.NaN : gender;
         this.note = note;
-        this.createdOn = Instant.now();
+//        this.createdOn = Instant.now();
     }
 
     public void update(String name, PhoneNumber phoneNumber, Gender gender, String note) {
-        validateName(name);
+        validateCustomer(name, phoneNumber.getValue());
         this.name = name.trim();
         this.phoneNum = phoneNumber.getValue();
         this.gender = gender;
         this.note = note;
-        this.modifiedOn = Instant.now();
+//        this.modifiedOn = Instant.now();
     }
 
     public void addPurchase(double amount, Instant purchasedAt) {
@@ -66,14 +76,5 @@ public class Customer {
         }
         this.totalPurchaseAmount += amount;
         this.lastPurchaseDate = purchasedAt;
-    }
-
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new RuntimeException("Name is required");
-        }
-        if (name.length() < 2 || name.length() > 40) {
-            throw new RuntimeException("Name must be 2–40 characters");
-        }
     }
 }

@@ -1,7 +1,11 @@
 package com.sapo.mockprojectpossystem.seeder.mock;
 
-import com.sapo.mockprojectpossystem.model.*;
-import com.sapo.mockprojectpossystem.repository.*;
+import com.sapo.mockprojectpossystem.auth.domain.repository.UserRepository;
+import com.sapo.mockprojectpossystem.product.domain.enums.ProductStatus;
+import com.sapo.mockprojectpossystem.product.domain.model.*;
+import com.sapo.mockprojectpossystem.product.domain.repository.BrandRepository;
+import com.sapo.mockprojectpossystem.product.domain.repository.ProductRepository;
+import com.sapo.mockprojectpossystem.product.domain.repository.TypeRepository;
 
 import java.util.List;
 
@@ -73,8 +77,8 @@ public class ProductMockFactory {
                     .summary("Summary of product " + i)
                     .content("Content of product " + i)
                     .status(random.nextBoolean()
-                            ? com.sapo.mockprojectpossystem.enums.ProductStatus.ACTIVE
-                            : com.sapo.mockprojectpossystem.enums.ProductStatus.INACTIVE)
+                            ? ProductStatus.ACTIVE
+                            : ProductStatus.INACTIVE)
                     .brand(brands.get(random.nextInt(brands.size())))
                     .createdByUserId(createdByUserId)
                     .createdAt(java.time.LocalDateTime.now().minusDays(random.nextInt(365)))

@@ -1,8 +1,8 @@
 package com.sapo.mockprojectpossystem.customer.infrastructure;
 
 import com.sapo.mockprojectpossystem.customer.domain.model.Customer;
-import com.sapo.mockprojectpossystem.customer.domain.model.Gender;
-import com.sapo.mockprojectpossystem.model.Purchase;
+import com.sapo.mockprojectpossystem.customer.domain.enums.Gender;
+import com.sapo.mockprojectpossystem.purchase.domain.model.Purchase;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import lombok.RequiredArgsConstructor;

@@ -1,15 +1,18 @@
 package com.sapo.mockprojectpossystem.customer.application;
 
+import com.sapo.mockprojectpossystem.auth.interfaces.request.UpdateUserRequest;
 import com.sapo.mockprojectpossystem.customer.domain.model.Customer;
-import com.sapo.mockprojectpossystem.customer.domain.model.Gender;
+import com.sapo.mockprojectpossystem.customer.domain.enums.Gender;
 import com.sapo.mockprojectpossystem.customer.domain.model.PhoneNumber;
 import com.sapo.mockprojectpossystem.customer.domain.repository.CustomerRepository;
 import com.sapo.mockprojectpossystem.customer.infrastructure.CustomerSpecification;
-import com.sapo.mockprojectpossystem.customer.interfaces.CustomerQueryParams;
-import com.sapo.mockprojectpossystem.customer.interfaces.CustomerResponse;
-import com.sapo.mockprojectpossystem.customer.interfaces.PageResponse;
-import com.sapo.mockprojectpossystem.customer.util.DateTimeUtils;
-import com.sapo.mockprojectpossystem.customer.util.StringUtils;
+import com.sapo.mockprojectpossystem.customer.interfaces.request.CreateCustomerRequest;
+import com.sapo.mockprojectpossystem.customer.interfaces.request.CustomerQueryParams;
+import com.sapo.mockprojectpossystem.customer.interfaces.request.UpdateCustomerRequest;
+import com.sapo.mockprojectpossystem.customer.interfaces.response.CustomerResponse;
+import com.sapo.mockprojectpossystem.common.response.PageResponse;
+import com.sapo.mockprojectpossystem.common.util.DateTimeUtils;
+import com.sapo.mockprojectpossystem.common.util.StringUtils;
 import com.sapo.mockprojectpossystem.customer.validation.CustomerValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +25,8 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDate;
 
+import static com.sapo.mockprojectpossystem.customer.validation.CustomerValidation.validateCustomer;
+
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
@@ -29,8 +34,13 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
 
     // Tạo customer từ name, phoneNum, gender và note
-    public CustomerResponse createCustomer(String name, String phoneNum, Gender gender, String note) {
-        CustomerValidation.validateCreate(name, phoneNum);
+    public CustomerResponse createCustomer(CreateCustomerRequest request) {
+        String name = request.getName();
+        String phoneNum = request.getPhoneNum();
+        Gender gender = request.getGender();
+        String note = request.getNote();
+
+        validateCustomer(name, phoneNum);
 
         customerRepository.findByPhoneNum(phoneNum)
                 .ifPresent(c -> {
@@ -54,41 +64,57 @@ public class CustomerService {
     // gender: lấy danh sách customer có gender cần tìm
     // sortBy, sortDir: sorting theo các thuộc tính của customer (kiểm tra class Customer để lấy các thuộc tính)
     public PageResponse<CustomerResponse> getAllCustomers(CustomerQueryParams query) {
-        String sortField = StringUtils.hasText(query.getSortBy()) ? query.getSortBy() : "createdAt";
 
-        Sort.Direction direction = query.getSortBy().equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        String keyword = query.getKeyword();
+        String startDate = query.getStartDate();
+        String endDate = query.getEndDate();
+        Integer page = query.getPage();
+        Integer size = query.getSize();
+        String sortBy = query.getSortBy();
+        String sortDir = query.getSortDir();
+        Gender gender = query.getGender();
+        Double minAmount = query.getMinAmount();
+        Double maxAmount = query.getMaxAmount();
 
-        Pageable pageable = PageRequest.of(query.getPage(), query.getSize(), Sort.by(direction, sortField));
+        String sortField = StringUtils.hasText(sortBy) ? sortBy : "createdAt";
+
+        Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
 
         Instant startInstant = null;
         Instant endInstant = null;
 
-        if (StringUtils.hasText(query.getStartDate()) && StringUtils.hasText(query.getEndDate())) {
-            LocalDate start = LocalDate.parse(query.getStartDate());
-            LocalDate end = LocalDate.parse(query.getEndDate());
+        if (StringUtils.hasText(startDate) && StringUtils.hasText(endDate)) {
+            LocalDate start = LocalDate.parse(startDate);
+            LocalDate end = LocalDate.parse(endDate);
 
             startInstant = DateTimeUtils.startOfDayUtc(start);
             endInstant = DateTimeUtils.endOfDayUtc(end);
         }
 
         Specification<Customer> spec = Specification
-                .where(CustomerSpecification.containKeyword(query.getKeyword()))
+                .where(CustomerSpecification.containKeyword(keyword))
                 .and(CustomerSpecification.purchaseDateBetween(startInstant, endInstant))
-                .and(CustomerSpecification.genderEquals(query.getGender() == null ? null : query.getGender()))
-                .and(CustomerSpecification.purchaseAmountBetween(query.getMinAmount(), query.getMaxAmount()));
+                .and(CustomerSpecification.genderEquals(gender == null ? null : gender))
+                .and(CustomerSpecification.purchaseAmountBetween(minAmount, maxAmount));
 
-        Page<CustomerResponse> page =
-                customerRepository.findAll(spec, pageable)
-                        .map(CustomerResponse::new);
+        Page<CustomerResponse> pageResponse = customerRepository.findAll(spec, pageable).map(CustomerResponse::new);
 
-        return new PageResponse<CustomerResponse>("customers", page);
+        return new PageResponse<CustomerResponse>("customers", pageResponse);
     }
 
     // Cập nhật customer
-    public CustomerResponse updateCustomer(Integer id, String name, String phoneNum, Gender gender, String note) {
+    public CustomerResponse updateCustomer(Integer id, UpdateCustomerRequest request) {
+
+        String name = request.getName();
+        String phoneNum = request.getPhoneNum();
+        Gender gender = request.getGender();
+        String note = request.getNote();
+
         Customer customer = customerRepository.findById(id).orElseThrow(() -> new RuntimeException("Customer does not exist"));
 
-        CustomerValidation.validateUpdate(name, phoneNum);
+        validateCustomer(name, phoneNum);
 
         customerRepository.findByPhoneNum(phoneNum)
                 .filter(existing -> !existing.getId().equals(id))
@@ -96,7 +122,6 @@ public class CustomerService {
                     throw new RuntimeException("Phone number already exists");
                 });
 
-        CustomerValidation.validateUpdate(name, phoneNum);
         customer.update(name, new PhoneNumber(phoneNum), gender, note);
         Customer updated = customerRepository.save(customer);
         return new CustomerResponse(updated);

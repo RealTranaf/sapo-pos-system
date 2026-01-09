@@ -1,7 +1,7 @@
 package com.sapo.mockprojectpossystem.seeder.mock;
 
-import com.sapo.mockprojectpossystem.model.Product;
-import com.sapo.mockprojectpossystem.model.ProductImage;
+import com.sapo.mockprojectpossystem.product.domain.model.Product;
+import com.sapo.mockprojectpossystem.product.domain.model.ProductImage;
 import java.util.UUID;
 import java.util.ArrayList;
 import java.util.List;

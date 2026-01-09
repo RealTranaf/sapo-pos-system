@@ -1,8 +1,13 @@
 package com.sapo.mockprojectpossystem.seeder;
 
+import com.sapo.mockprojectpossystem.auth.domain.repository.UserRepository;
 import com.sapo.mockprojectpossystem.customer.domain.model.Customer;
 import com.sapo.mockprojectpossystem.customer.domain.repository.CustomerRepository;
-import com.sapo.mockprojectpossystem.repository.*;
+import com.sapo.mockprojectpossystem.product.domain.repository.BrandRepository;
+import com.sapo.mockprojectpossystem.product.domain.repository.ProductRepository;
+import com.sapo.mockprojectpossystem.product.domain.repository.ProductVariantRepository;
+import com.sapo.mockprojectpossystem.product.domain.repository.TypeRepository;
+import com.sapo.mockprojectpossystem.purchase.domain.repository.PurchaseRepository;
 import com.sapo.mockprojectpossystem.seeder.mock.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;

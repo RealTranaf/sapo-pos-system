@@ -1,7 +1,10 @@
 package com.sapo.mockprojectpossystem.seeder.mock;
 
+import com.sapo.mockprojectpossystem.auth.domain.model.User;
 import com.sapo.mockprojectpossystem.customer.domain.model.Customer;
-import com.sapo.mockprojectpossystem.model.*;
+import com.sapo.mockprojectpossystem.product.domain.model.ProductVariant;
+import com.sapo.mockprojectpossystem.purchase.domain.model.Purchase;
+import com.sapo.mockprojectpossystem.purchase.domain.model.PurchaseItem;
 
 import java.util.ArrayList;
 import java.util.List;

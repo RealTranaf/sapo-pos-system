@@ -1,7 +1,7 @@
 package com.sapo.mockprojectpossystem.seeder.mock;
 
-import com.sapo.mockprojectpossystem.model.Role;
-import com.sapo.mockprojectpossystem.model.User;
+import com.sapo.mockprojectpossystem.auth.domain.enums.Role;
+import com.sapo.mockprojectpossystem.auth.domain.model.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
