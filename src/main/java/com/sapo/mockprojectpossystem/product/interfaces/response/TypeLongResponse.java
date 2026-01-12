@@ -4,6 +4,7 @@ import com.sapo.mockprojectpossystem.product.domain.model.Product;
 import com.sapo.mockprojectpossystem.product.domain.model.Type;
 import lombok.Data;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -11,13 +12,15 @@ import java.util.List;
 public class TypeLongResponse {
     private Integer id;
     private String name;
-    private LocalDateTime createdAt;
+    private Instant createOn;
+    private Instant modifiedOn;
     private List<Integer> productsId;
 
     public TypeLongResponse(Type type) {
         this.id = type.getId();
         this.name = type.getName();
-        this.createdAt = type.getCreatedAt();
+        this.createOn = type.getCreatedOn();
+        this.modifiedOn = type.getModifiedOn();
         this.productsId = type.getProducts().stream().map(Product::getId).toList();
     }
 }

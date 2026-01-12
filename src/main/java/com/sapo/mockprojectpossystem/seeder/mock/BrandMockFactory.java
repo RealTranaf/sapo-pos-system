@@ -16,8 +16,7 @@ public class BrandMockFactory {
         };
 
         for (String name : names) {
-            Brand b = new Brand();
-            b.setName(name);
+            Brand b = Brand.create(name);
             brands.add(b);
         }
 

@@ -39,16 +39,16 @@ public class DevDatabaseSeeder implements CommandLineRunner {
             userRepository.saveAll(UserMockFactory.all());
             System.out.println("✅ Seeded USERS");
         }
-//
-//        if (brandRepository.count() == 0) {
-//            brandRepository.saveAll(BrandMockFactory.all());
-//            System.out.println("✅ Seeded BRANDS");
-//        }
-//
-//        if (typeRepository.count() == 0) {
-//            typeRepository.saveAll(TypeMockFactory.all());
-//            System.out.println("✅ Seeded TYPES");
-//        }
+
+        if (brandRepository.count() == 0) {
+            brandRepository.saveAll(BrandMockFactory.all());
+            System.out.println("✅ Seeded BRANDS");
+        }
+
+        if (typeRepository.count() == 0) {
+            typeRepository.saveAll(TypeMockFactory.all());
+            System.out.println("✅ Seeded TYPES");
+        }
 
         if (customerRepository.count() == 0) {
             List<Customer> customers = CustomerMockFactory.generate(20);

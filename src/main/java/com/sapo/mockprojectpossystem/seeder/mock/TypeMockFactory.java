@@ -16,8 +16,7 @@ public class TypeMockFactory {
         };
 
         for (String name : names) {
-            Type t = new Type();
-            t.setName(name);
+            Type t = Type.create(name);
             types.add(t);
         }
 

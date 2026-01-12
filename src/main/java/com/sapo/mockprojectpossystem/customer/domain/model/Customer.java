@@ -58,7 +58,6 @@ public class Customer {
         this.phoneNum = phoneNumber.getValue();
         this.gender = gender == null ? Gender.NaN : gender;
         this.note = note;
-//        this.createdOn = Instant.now();
     }
 
     public void update(String name, PhoneNumber phoneNumber, Gender gender, String note) {
@@ -67,7 +66,6 @@ public class Customer {
         this.phoneNum = phoneNumber.getValue();
         this.gender = gender;
         this.note = note;
-//        this.modifiedOn = Instant.now();
     }
 
     public void addPurchase(double amount, Instant purchasedAt) {

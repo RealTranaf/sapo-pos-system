@@ -6,9 +6,12 @@ import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -39,6 +42,13 @@ public class User implements UserDetails {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(updatable = false)
+    @CreationTimestamp
+    private Instant createdOn;
+
+    @UpdateTimestamp
+    private Instant modifiedOn;
 
     public User(String username, String name, String phoneNum, String password, boolean isActive, Role role) {
         this.username = username;

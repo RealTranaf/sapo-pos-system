@@ -15,7 +15,7 @@ import java.util.Optional;
 @Repository
 @Transactional
 @RequiredArgsConstructor
-public class JpaCustomerAdapter implements CustomerRepository {
+public class JpaCustomerRepositoryAdapter implements CustomerRepository {
     private final JpaCustomerRepository jpaRepo;
 
     @Override

@@ -3,6 +3,7 @@ package com.sapo.mockprojectpossystem.purchase.interfaces.response;
 import com.sapo.mockprojectpossystem.purchase.domain.model.Purchase;
 import lombok.Data;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,7 +16,8 @@ public class PurchaseResponse {
     private double totalAmount;
     private double discountAmount;
     private String note;
-    private LocalDateTime createdAt;
+    private Instant createdOn;
+    private Instant modifiedOn;
     private List<PurchaseItemResponse> purchaseItems;
 
     public PurchaseResponse(Purchase purchase) {
@@ -25,7 +27,8 @@ public class PurchaseResponse {
         this.totalAmount = purchase.getTotalAmount();
         this.discountAmount = purchase.getDiscountAmount();
         this.note = purchase.getNote();
-        this.createdAt = purchase.getCreatedAt();
+        this.createdOn = purchase.getCreatedOn();
+        this.modifiedOn = purchase.getModifiedOn();
         this.purchaseItems = purchase.getPurchaseItems()
                 .stream()
                 .map(PurchaseItemResponse::new)

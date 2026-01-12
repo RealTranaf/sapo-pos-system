@@ -39,14 +39,17 @@ public class BrandService {
 
     // Tạo brand từ name
     public BrandResponse createBrand(String name) {
-        Brand brand = new Brand(name);
+        brandRepository.findByName(name).ifPresent(b -> {
+            throw new RuntimeException("Brand name already exists");
+        });
+        Brand brand = Brand.create(name);
         return new BrandResponse(brandRepository.save(brand));
     }
 
     // Cập nhật brand
     public BrandResponse updateBrand(Integer id, String name) {
         Brand brand = brandRepository.findById(id).orElseThrow(() -> new RuntimeException("Brand does not exist"));
-        brand.setName(name);
+        brand.update(name);
         return new BrandResponse(brandRepository.save(brand));
     }
 }

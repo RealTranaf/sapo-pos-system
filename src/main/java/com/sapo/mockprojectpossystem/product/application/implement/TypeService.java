@@ -35,13 +35,16 @@ public class TypeService {
     }
 
     public TypeResponse createType(String name) {
-        Type type = new Type(name);
+        typeRepository.findByName(name).ifPresent(t -> {
+            throw new RuntimeException("Type name already exists");
+        });
+        Type type = Type.create(name);
         return new TypeResponse(typeRepository.save(type));
     }
 
     public TypeResponse updateType(Integer id, String name) {
         Type type = typeRepository.findById(id).orElseThrow(() -> new RuntimeException("Type does not exist"));
-        type.setName(name);
+        type.update(name);
         return new TypeResponse(typeRepository.save(type));
     }
 }
