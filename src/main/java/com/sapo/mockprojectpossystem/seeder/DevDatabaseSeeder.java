@@ -39,47 +39,44 @@ public class DevDatabaseSeeder implements CommandLineRunner {
             userRepository.saveAll(UserMockFactory.all());
             System.out.println("✅ Seeded USERS");
         }
-
-        if (brandRepository.count() == 0) {
-            brandRepository.saveAll(BrandMockFactory.all());
-            System.out.println("✅ Seeded BRANDS");
-        }
-
-        if (typeRepository.count() == 0) {
-            typeRepository.saveAll(TypeMockFactory.all());
-            System.out.println("✅ Seeded TYPES");
-        }
+//
+//        if (brandRepository.count() == 0) {
+//            brandRepository.saveAll(BrandMockFactory.all());
+//            System.out.println("✅ Seeded BRANDS");
+//        }
+//
+//        if (typeRepository.count() == 0) {
+//            typeRepository.saveAll(TypeMockFactory.all());
+//            System.out.println("✅ Seeded TYPES");
+//        }
 
         if (customerRepository.count() == 0) {
-            int count = 20;
-            List<Customer> customers = CustomerMockFactory.generate(count);
-            for (int i = 0; i < count; i++) {
-                customerRepository.save(customers.get(i));
-            }
+            List<Customer> customers = CustomerMockFactory.generate(20);
+            customerRepository.saveAll(customers);
             System.out.println("✅ Seeded CUSTOMERS");
         }
 
-        if (productRepository.count() == 0) {
-            ProductMockFactory.seedProducts(
-                    productRepository,
-                    brandRepository,
-                    typeRepository,
-                    userRepository
-            );
-            System.out.println("✅ Seeded PRODUCTS + VARIANTS + OPTIONS + IMAGES");
-        }
+//        if (productRepository.count() == 0) {
+//            ProductMockFactory.seedProducts(
+//                    productRepository,
+//                    brandRepository,
+//                    typeRepository,
+//                    userRepository
+//            );
+//            System.out.println("✅ Seeded PRODUCTS + VARIANTS + OPTIONS + IMAGES");
+//        }
 
-        // ✅ THÊM Ở ĐÂY
-        if (purchaseRepository.count() == 0) {
-            purchaseRepository.saveAll(
-                    PurchaseMockFactory.all(
-                            customerRepository.findAll(),
-                            userRepository.findAll(),
-                            productVariantRepository.findAll()
-                    )
-            );
-            System.out.println("✅ Seeded PURCHASES + PURCHASE ITEMS");
-        }
+//        // ✅ THÊM Ở ĐÂY
+//        if (purchaseRepository.count() == 0) {
+//            purchaseRepository.saveAll(
+//                    PurchaseMockFactory.all(
+//                            customerRepository.findAll(),
+//                            userRepository.findAll(),
+//                            productVariantRepository.findAll()
+//                    )
+//            );
+//            System.out.println("✅ Seeded PURCHASES + PURCHASE ITEMS");
+//        }
 
         System.out.println("🔥 DevDatabaseSeeder FINISHED");
     }

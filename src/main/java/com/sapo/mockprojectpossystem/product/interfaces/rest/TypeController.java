@@ -1,19 +1,12 @@
 package com.sapo.mockprojectpossystem.product.interfaces.rest;
 
-import com.sapo.mockprojectpossystem.product.domain.model.Type;
-import com.sapo.mockprojectpossystem.product.interfaces.response.TypeLongResponse;
+import com.sapo.mockprojectpossystem.product.interfaces.request.TypeQueryParams;
 import com.sapo.mockprojectpossystem.common.response.MessageResponse;
 import com.sapo.mockprojectpossystem.product.application.implement.TypeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,17 +17,9 @@ public class TypeController {
     // Lấy danh sách Type
     @PreAuthorize("hasAnyRole('OWNER', 'WH')")
     @GetMapping
-    public ResponseEntity<?> getAllTypes(@RequestParam(defaultValue = "0") int page,
-                                          @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<?> getAllTypes(@ModelAttribute TypeQueryParams query) {
         try {
-            Map<String, Object> response = new HashMap<>();
-            Page<Type> typePage = typeService.getAllType(page, size);
-            List<TypeLongResponse> typeResponses = typePage.stream().map(TypeLongResponse::new).collect(Collectors.toList());
-            response.put("types", typeResponses);
-            response.put("currentPage", typePage.getNumber());
-            response.put("totalItems", typePage.getTotalElements());
-            response.put("totalPages", typePage.getTotalPages());
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(typeService.getAllType(query));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
@@ -45,8 +30,7 @@ public class TypeController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getTypeById(@PathVariable Integer id) {
         try {
-            Type type = typeService.getTypeById(id);
-            return ResponseEntity.ok(new TypeLongResponse(type));
+            return ResponseEntity.ok(typeService.getTypeById(id));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
@@ -57,8 +41,7 @@ public class TypeController {
     @PostMapping
     public ResponseEntity<?> addType(@RequestParam String name) {
         try {
-            typeService.createType(name);
-            return ResponseEntity.ok("Type added successfully!");
+            return ResponseEntity.ok(typeService.createType(name));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
@@ -70,8 +53,7 @@ public class TypeController {
     public ResponseEntity<?> updateType(@PathVariable Integer id,
                                          @RequestParam String name) {
         try {
-            typeService.updateType(id, name);
-            return ResponseEntity.ok("Type updated successfully!");
+            return ResponseEntity.ok(typeService.updateType(id, name));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }

@@ -1,19 +1,11 @@
 package com.sapo.mockprojectpossystem.product.interfaces.rest;
-
-import com.sapo.mockprojectpossystem.product.domain.model.Brand;
 import com.sapo.mockprojectpossystem.common.response.MessageResponse;
-import com.sapo.mockprojectpossystem.product.interfaces.response.BrandLongResponse;
+import com.sapo.mockprojectpossystem.product.interfaces.request.BrandQueryParams;
 import com.sapo.mockprojectpossystem.product.application.implement.BrandService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,17 +16,9 @@ public class BrandController {
     // Lấy hết danh sách các brand
     @PreAuthorize("hasAnyRole('OWNER', 'WH')")
     @GetMapping
-    public ResponseEntity<?> getAllBrands(@RequestParam(defaultValue = "0") int page,
-                                          @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<?> getAllBrands(@ModelAttribute BrandQueryParams query) {
         try {
-            Map<String, Object> response = new HashMap<>();
-            Page<Brand> brandPage = brandService.getAllBrand(page, size);
-            List<BrandLongResponse> brandResponses = brandPage.stream().map(BrandLongResponse::new).collect(Collectors.toList());
-            response.put("brands", brandResponses);
-            response.put("currentPage", brandPage.getNumber());
-            response.put("totalItems", brandPage.getTotalElements());
-            response.put("totalPages", brandPage.getTotalPages());
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(brandService.getAllBrand(query));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
@@ -45,8 +29,7 @@ public class BrandController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getBrandById(@PathVariable Integer id) {
         try {
-            Brand brand = brandService.getBrandById(id);
-            return ResponseEntity.ok(new BrandLongResponse(brand));
+            return ResponseEntity.ok(brandService.getBrandById(id));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
@@ -57,8 +40,7 @@ public class BrandController {
     @PostMapping
     public ResponseEntity<?> addBrand(@RequestParam String name) {
         try {
-            brandService.createBrand(name);
-            return ResponseEntity.ok("Brand added successfully!");
+            return ResponseEntity.ok(brandService.createBrand(name));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
@@ -70,8 +52,7 @@ public class BrandController {
     public ResponseEntity<?> updateBrand(@PathVariable Integer id,
                                          @RequestParam String name) {
         try {
-            brandService.updateBrand(id, name);
-            return ResponseEntity.ok("Brand updated successfully!");
+            return ResponseEntity.ok(brandService.updateBrand(id, name));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }

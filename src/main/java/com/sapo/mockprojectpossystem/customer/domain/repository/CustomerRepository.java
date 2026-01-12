@@ -14,6 +14,6 @@ public interface CustomerRepository {
     List<Customer> findAll();
     Page<Customer> findAll(Specification<Customer> spec, Pageable pageable);
     Customer save(Customer customer);
-//    List<Customer> saveAll(List<Customer> customers);
+    List<Customer> saveAll(List<Customer> customers);
     long count();
 }

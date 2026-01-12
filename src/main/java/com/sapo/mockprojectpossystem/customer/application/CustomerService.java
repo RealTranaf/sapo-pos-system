@@ -1,6 +1,5 @@
 package com.sapo.mockprojectpossystem.customer.application;
 
-import com.sapo.mockprojectpossystem.auth.interfaces.request.UpdateUserRequest;
 import com.sapo.mockprojectpossystem.customer.domain.model.Customer;
 import com.sapo.mockprojectpossystem.customer.domain.enums.Gender;
 import com.sapo.mockprojectpossystem.customer.domain.model.PhoneNumber;
@@ -13,7 +12,6 @@ import com.sapo.mockprojectpossystem.customer.interfaces.response.CustomerRespon
 import com.sapo.mockprojectpossystem.common.response.PageResponse;
 import com.sapo.mockprojectpossystem.common.util.DateTimeUtils;
 import com.sapo.mockprojectpossystem.common.util.StringUtils;
-import com.sapo.mockprojectpossystem.customer.validation.CustomerValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

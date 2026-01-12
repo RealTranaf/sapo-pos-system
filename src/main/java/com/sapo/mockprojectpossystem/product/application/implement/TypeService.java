@@ -1,7 +1,12 @@
 package com.sapo.mockprojectpossystem.product.application.implement;
 
+import com.sapo.mockprojectpossystem.common.response.PageResponse;
+import com.sapo.mockprojectpossystem.product.domain.model.Brand;
 import com.sapo.mockprojectpossystem.product.domain.model.Type;
 import com.sapo.mockprojectpossystem.product.domain.repository.TypeRepository;
+import com.sapo.mockprojectpossystem.product.interfaces.request.TypeQueryParams;
+import com.sapo.mockprojectpossystem.product.interfaces.response.BrandResponse;
+import com.sapo.mockprojectpossystem.product.interfaces.response.TypeResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,33 +21,27 @@ import java.util.Optional;
 public class TypeService {
     private final TypeRepository typeRepository;
 
-    public Page<Type> getAllType(int page, int size) {
+    public PageResponse<TypeResponse> getAllType(TypeQueryParams query) {
+        Integer page = query.getPage();
+        Integer size = query.getSize();
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        return typeRepository.findAll(pageable);
+        Page<TypeResponse> responsePage = typeRepository.findAll(pageable).map(TypeResponse::new);
+        return new PageResponse<TypeResponse>("types", responsePage);
     }
 
-    public Type getTypeById(Integer id) {
-        Optional<Type> optional = typeRepository.findById(id);
-        if (optional.isPresent()) {
-            return optional.get();
-        } else {
-            throw new RuntimeException("Brand doesn't exist");
-        }
+    public TypeResponse getTypeById(Integer id) {
+        Type type = typeRepository.findById(id).orElseThrow(() -> new RuntimeException("Type does not exist"));
+        return new TypeResponse(type);
     }
 
-    public void createType(String name) {
+    public TypeResponse createType(String name) {
         Type type = new Type(name);
-        typeRepository.save(type);
+        return new TypeResponse(typeRepository.save(type));
     }
 
-    public void updateType(Integer id, String name) {
-        Optional<Type> optional = typeRepository.findById(id);
-        if (optional.isPresent()) {
-            Type type = optional.get();
-            type.setName(name);
-            typeRepository.save(type);
-        } else {
-            throw new RuntimeException("Type doesn't exist");
-        }
+    public TypeResponse updateType(Integer id, String name) {
+        Type type = typeRepository.findById(id).orElseThrow(() -> new RuntimeException("Type does not exist"));
+        type.setName(name);
+        return new TypeResponse(typeRepository.save(type));
     }
 }
