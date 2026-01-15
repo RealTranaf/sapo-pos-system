@@ -1,7 +1,7 @@
 package com.sapo.mockprojectpossystem.seeder.mock;
 
 import com.sapo.mockprojectpossystem.customer.domain.model.Customer;
-import com.sapo.mockprojectpossystem.customer.domain.enums.Gender;
+import com.sapo.mockprojectpossystem.customer.domain.model.Gender;
 import com.sapo.mockprojectpossystem.customer.domain.model.PhoneNumber;
 
 import java.util.List;

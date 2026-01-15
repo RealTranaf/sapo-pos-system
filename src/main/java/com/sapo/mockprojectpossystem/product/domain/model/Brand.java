@@ -7,7 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.sapo.mockprojectpossystem.common.validation.CommonValidation.validateName;
@@ -31,7 +31,7 @@ public class Brand {
     private Instant modifiedOn;
 
     @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Product> products;
+    private List<Product> products =  new ArrayList<>();
 
     public static Brand create(String name) {
         validateName(name);
@@ -47,16 +47,18 @@ public class Brand {
         this.name = newName;
     }
 
-    public void addProduct(Product product) {
-        if (product == null) {
-            throw new IllegalArgumentException("Product must not be null");
-        }
-        products.add(product);
-        product.setBrand(this);
-    }
-
-    public void removeProduct(Product product) {
-        products.remove(product);
-        product.setBrand(null);
-    }
+//    public void addProduct(Product product) {
+//        if (product == null) {
+//            throw new IllegalArgumentException("Product must not be null");
+//        }
+//        products.add(product);
+////        product.setBrand(this);
+//        product.addBrand(this);
+//    }
+//
+//    public void removeProduct(Product product) {
+//        products.remove(product);
+////        product.setBrand(null);
+//        product.removeBrand(this);
+//    }
 }

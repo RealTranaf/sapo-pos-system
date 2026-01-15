@@ -1,25 +1,23 @@
 package com.sapo.mockprojectpossystem.product.domain.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.sapo.mockprojectpossystem.common.validation.CommonValidation.validateName;
 
 @Entity
 @Table(name = "product_options")
-@Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class ProductOption {
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
@@ -34,13 +32,38 @@ public class ProductOption {
     private Integer position;
 
     @OneToMany(mappedBy = "option", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<ProductOptionValue> values;
+    private List<ProductOptionValue> values = new ArrayList<>();
 
+    @Column(updatable = false)
     @CreationTimestamp
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private Instant createdOn;
 
     @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    private Instant modifiedOn;
+
+    public static ProductOption create(String name, Integer position) {
+        ProductOption option = new ProductOption(null, name, position, new ArrayList<>());
+        return option;
+    }
+
+    private ProductOption(Product product, String name, Integer position, List<ProductOptionValue> values) {
+        validateName(name);
+        this.product = product;
+        this.name = name;
+        this.position = position;
+        this.values = values;
+    }
+
+    public void assignTo(Product product) {
+        this.product = product;
+    }
+
+    public void addValue(ProductOptionValue value) {
+        value.assignTo(this);
+        values.add(value);
+    }
+
+    public void clearValues() {
+        values.clear();
+    }
 }

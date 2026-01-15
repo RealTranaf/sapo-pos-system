@@ -1,10 +1,9 @@
 package com.sapo.mockprojectpossystem.auth.validation;
 
-import com.sapo.mockprojectpossystem.auth.domain.enums.Role;
+import com.sapo.mockprojectpossystem.auth.domain.model.Role;
 import lombok.NoArgsConstructor;
 
 import static com.sapo.mockprojectpossystem.common.validation.CommonValidation.*;
-import static com.sapo.mockprojectpossystem.common.validation.CommonValidation.validateRole;
 
 @NoArgsConstructor
 public class UserValidation {

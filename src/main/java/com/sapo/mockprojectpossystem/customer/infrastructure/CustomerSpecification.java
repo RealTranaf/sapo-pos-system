@@ -1,7 +1,7 @@
 package com.sapo.mockprojectpossystem.customer.infrastructure;
 
 import com.sapo.mockprojectpossystem.customer.domain.model.Customer;
-import com.sapo.mockprojectpossystem.customer.domain.enums.Gender;
+import com.sapo.mockprojectpossystem.customer.domain.model.Gender;
 import com.sapo.mockprojectpossystem.purchase.domain.model.Purchase;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -44,7 +44,7 @@ public class CustomerSpecification {
             query.distinct(true);
 
             Join<Customer, Purchase> purchases = root.join("purchases", JoinType.LEFT);
-            return cb.between(purchases.get("createdAt"), start, end);
+            return cb.between(purchases.get("createdOn"), start, end);
         };
     }
     // Query tìm kiếm customer đã mua hàng trong một khoảng thời gian nhất định

@@ -8,39 +8,18 @@ import java.util.List;
 
 public class ProductOptionMockFactory {
 
-    public static List<ProductOption> forProduct(Product product) {
+    public static List<ProductOption> forProduct() {
 
-        ProductOption color = ProductOption.builder()
-                .product(product)
-                .name("Color")
-                .position(1)
-                .build();
+        ProductOption color = ProductOption.create("Color", 1);
+        color.addValue(ProductOptionValue.create("Red"));
+        color.addValue(ProductOptionValue.create("Blue"));
+        color.addValue(ProductOptionValue.create("Black"));
 
-        ProductOption size = ProductOption.builder()
-                .product(product)
-                .name("Size")
-                .position(2)
-                .build();
-
-        color.setValues(List.of(
-                value(color, "Red"),
-                value(color, "Blue"),
-                value(color, "Black")
-        ));
-
-        size.setValues(List.of(
-                value(size, "S"),
-                value(size, "M"),
-                value(size, "L")
-        ));
+        ProductOption size = ProductOption.create("Size", 2);
+        size.addValue(ProductOptionValue.create("S"));
+        size.addValue(ProductOptionValue.create("M"));
+        size.addValue(ProductOptionValue.create("L"));
 
         return List.of(color, size);
-    }
-
-    private static ProductOptionValue value(ProductOption option, String val) {
-        return ProductOptionValue.builder()
-                .option(option)
-                .value(val)
-                .build();
     }
 }

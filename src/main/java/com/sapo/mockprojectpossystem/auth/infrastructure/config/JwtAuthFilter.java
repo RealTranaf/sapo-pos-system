@@ -2,7 +2,7 @@ package com.sapo.mockprojectpossystem.auth.infrastructure.config;
 
 import com.sapo.mockprojectpossystem.auth.domain.model.User;
 import com.sapo.mockprojectpossystem.auth.domain.repository.UserRepository;
-import com.sapo.mockprojectpossystem.auth.application.JwtService;
+import com.sapo.mockprojectpossystem.auth.application.implement.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

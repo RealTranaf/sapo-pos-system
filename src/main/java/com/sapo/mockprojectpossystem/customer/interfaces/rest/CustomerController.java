@@ -1,11 +1,10 @@
 package com.sapo.mockprojectpossystem.customer.interfaces.rest;
 
 import com.sapo.mockprojectpossystem.common.response.MessageResponse;
-import com.sapo.mockprojectpossystem.customer.application.CustomerService;
-import com.sapo.mockprojectpossystem.customer.interfaces.request.CreateCustomerRequest;
-import com.sapo.mockprojectpossystem.customer.interfaces.request.CustomerQueryParams;
-import com.sapo.mockprojectpossystem.customer.interfaces.request.UpdateCustomerRequest;
-import com.sapo.mockprojectpossystem.customer.interfaces.response.CustomerResponse;
+import com.sapo.mockprojectpossystem.customer.application.implement.CustomerService;
+import com.sapo.mockprojectpossystem.customer.application.request.CreateCustomerRequest;
+import com.sapo.mockprojectpossystem.customer.application.request.CustomerQueryParams;
+import com.sapo.mockprojectpossystem.customer.application.request.UpdateCustomerRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

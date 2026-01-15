@@ -2,18 +2,18 @@ package com.sapo.mockprojectpossystem.purchase.domain.model;
 
 import com.sapo.mockprojectpossystem.auth.domain.model.User;
 import com.sapo.mockprojectpossystem.customer.domain.model.Customer;
+import com.sapo.mockprojectpossystem.product.domain.model.ProductVariant;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 public class Purchase {
     @Id
@@ -43,14 +43,39 @@ public class Purchase {
     private Instant modifiedOn;
 
     @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PurchaseItem> purchaseItems;
+    private List<PurchaseItem> purchaseItems = new ArrayList<>();
 
-    public Purchase(Customer customer, User user, double totalAmount, double discountAmount, String note, List<PurchaseItem> purchaseItems) {
+    public static Purchase create(Customer customer, User user, String note) {
+        return new Purchase(customer, user, note);
+    }
+
+    public Purchase(Customer customer, User user, String note) {
         this.customer = customer;
         this.user = user;
-        this.totalAmount = totalAmount;
-        this.discountAmount = discountAmount;
         this.note = note;
-        this.purchaseItems = purchaseItems;
+        this.totalAmount = 0.0;
+        this.discountAmount = 0.0;
+    }
+
+    public void addItem(ProductVariant variant, int quantity) {
+        variant.decreaseInventory(quantity);
+
+        PurchaseItem item = PurchaseItem.create(this, variant, quantity);
+        purchaseItems.add(item);
+
+        recalculateTotals();
+    }
+
+    private void recalculateTotals() {
+        this.totalAmount = purchaseItems.stream()
+                .mapToDouble(PurchaseItem::getTotalPrice)
+                .sum();
+    }
+
+    public void applyDiscount(double discountAmount) {
+        if (discountAmount < 0) {
+            throw new IllegalArgumentException("Discount must be >= 0");
+        }
+        this.discountAmount = discountAmount;
     }
 }

@@ -1,13 +1,14 @@
 package com.sapo.mockprojectpossystem.seeder.mock;
 
+import com.sapo.mockprojectpossystem.auth.domain.model.User;
 import com.sapo.mockprojectpossystem.auth.domain.repository.UserRepository;
-import com.sapo.mockprojectpossystem.product.domain.enums.ProductStatus;
+import com.sapo.mockprojectpossystem.product.domain.model.ProductStatus;
 import com.sapo.mockprojectpossystem.product.domain.model.*;
 import com.sapo.mockprojectpossystem.product.domain.repository.BrandRepository;
 import com.sapo.mockprojectpossystem.product.domain.repository.ProductRepository;
 import com.sapo.mockprojectpossystem.product.domain.repository.TypeRepository;
 
-import java.util.List;
+import java.util.*;
 
 public class ProductMockFactory {
 
@@ -20,38 +21,24 @@ public class ProductMockFactory {
         // 1. Lấy data cần thiết
         List<Brand> brands = brandRepository.findAll();
         List<Type> types = typeRepository.findAll();
-        int createdByUserId = userRepository.findAll().get(0).getId();
+        User user = userRepository.findAll().get(0);
 
         // 2. Tạo PRODUCTS
-        List<Product> products = all(brands, types, createdByUserId);
+        List<Product> products = createProducts(brands, types, user);
 
         // 3. Save products trước (BẮT BUỘC)
         productRepository.saveAll(products);
 
         // 4. OPTIONS
-        for (Product p : products) {
-            List<ProductOption> options = ProductOptionMockFactory.forProduct(p);
-            p.setOptions(options);
-        }
-
-        // 5. VARIANTS
-        List<ProductVariant> variants = ProductVariantMockFactory.all(products);
-        for (Product p : products) {
-            p.setVariants(
-                    variants.stream()
-                            .filter(v -> v.getProduct().equals(p))
-                            .toList()
+        for (Product product : products) {
+            product.replaceOptions(
+                    ProductOptionMockFactory.forProduct()
             );
-        }
-
-        // 6. IMAGES
-        List<ProductImage> images = ProductImageMockFactory.all(products);
-        for (Product p : products) {
-            p.setImages(
-                    images.stream()
-                            .filter(i -> i.getProduct().equals(p))
-                            .toList()
+            product.replaceVariants(
+                    ProductVariantMockFactory.forProduct(product)
             );
+
+            ProductImageMockFactory.forProduct(product);
         }
 
         // 7. Save lại để cascade ALL
@@ -60,32 +47,35 @@ public class ProductMockFactory {
 
     // ================= ORIGINAL METHOD =================
 
-    public static List<Product> all(List<Brand> brands, List<Type> types, int createdByUserId) {
-        List<Product> products = new java.util.ArrayList<>();
-        java.util.Random random = new java.util.Random();
+    private static List<Product> createProducts(List<Brand> brands, List<Type> types, User user) {
+        List<Product> products = new ArrayList<>();
+        java.util.Random random = new Random();
 
         for (int i = 1; i <= 5000; i++) {
 
-            // random 1–3 types
-            java.util.Set<Type> productTypes = new java.util.HashSet<>();
+            Product product = Product.create(
+                    "Product " + i,
+                    "Summary of product " + i,
+                    "Content of product " + i,
+                    random.nextBoolean()
+                            ? ProductStatus.ACTIVE
+                            : ProductStatus.INACTIVE,
+                    user
+            );
+
+            // brand
+            product.updateBrand(
+                    brands.get(random.nextInt(brands.size()))
+            );
+
+            // types
+            Set<Type> productTypes = new HashSet<>();
             for (int j = 0; j < 1 + random.nextInt(3); j++) {
                 productTypes.add(types.get(random.nextInt(types.size())));
             }
+            product.syncTypes(productTypes);
 
-            Product p = Product.builder()
-                    .name("Product " + i)
-                    .summary("Summary of product " + i)
-                    .content("Content of product " + i)
-                    .status(random.nextBoolean()
-                            ? ProductStatus.ACTIVE
-                            : ProductStatus.INACTIVE)
-                    .brand(brands.get(random.nextInt(brands.size())))
-                    .createdByUserId(createdByUserId)
-                    .createdAt(java.time.LocalDateTime.now().minusDays(random.nextInt(365)))
-                    .types(productTypes)
-                    .build();
-
-            products.add(p);
+            products.add(product);
         }
 
         return products;

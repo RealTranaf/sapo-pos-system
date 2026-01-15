@@ -21,7 +21,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
         "AND p.status = 'ACTIVE' " +
         "AND (:brandId IS NULL OR :brandId = 0 OR p.brand.id = :brandId) " +
         "AND (:typeIds IS NULL OR t.id IN :typeIds) " +
-        "ORDER BY p.updatedAt DESC")
+        "ORDER BY p.modifiedOn DESC")
     Page<Product> searchProducts(
         @Param("search") String search,
         @Param("brandId") Integer brandId,

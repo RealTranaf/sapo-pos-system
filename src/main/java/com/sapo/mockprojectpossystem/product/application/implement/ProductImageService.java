@@ -1,13 +1,12 @@
 package com.sapo.mockprojectpossystem.product.application.implement;
 
 import com.sapo.mockprojectpossystem.common.response.FileUploadResponse;
-import com.sapo.mockprojectpossystem.product.application.interfaces.IProductImageService;
 import com.sapo.mockprojectpossystem.product.application.interfaces.IProductMapper;
-import com.sapo.mockprojectpossystem.product.interfaces.response.ProductImageResponse;
+import com.sapo.mockprojectpossystem.product.domain.model.ProductStatus;
+import com.sapo.mockprojectpossystem.product.application.response.ProductImageResponse;
 import com.sapo.mockprojectpossystem.product.domain.model.Product;
 import com.sapo.mockprojectpossystem.product.domain.model.ProductImage;
 import com.sapo.mockprojectpossystem.common.exception.NotFoundException;
-import com.sapo.mockprojectpossystem.product.domain.repository.ProductImageRepository;
 import com.sapo.mockprojectpossystem.product.domain.repository.ProductRepository;
 import com.sapo.mockprojectpossystem.common.service.IFileUploadService;
 import lombok.AccessLevel;
@@ -24,71 +23,62 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Transactional
-public class ProductImageService implements IProductImageService {
-    ProductImageRepository productImageRepository;
+public class ProductImageService {
     ProductRepository productRepository;
     IProductMapper productMapper;
     IFileUploadService fileUploadService;
 
-    @Override
     @Transactional
     public ProductImageResponse createProductImage(Integer productId, MultipartFile image) throws IOException {
-        Product product = productRepository.findById(productId)
-            .orElseThrow(() -> new NotFoundException("Not found product with product id: " + productId));
+        Product product = loadActiveProduct(productId);
 
-        if (!product.getStatus().getValue().equalsIgnoreCase("ACTIVE") ) {
-            throw new NotFoundException("Product doesn't exist.");
-        }
+        FileUploadResponse upload = fileUploadService.uploadImageFile(image);
 
-        FileUploadResponse fileUploadResponse = fileUploadService.uploadImageFile(image);
-        int position = 1;
-        if (!product.getImages().isEmpty()) {
-            position = product.getImages().size() + 1;
-        }
+        ProductImage productImage = product.addImage(
+                product.getImages().size() + 1,
+                upload.getUrl(),
+                upload.getOriginalName(),
+                upload.getAssetId(),
+                upload.getSize()
+        );
 
-        ProductImage imageEntity = ProductImage.builder()
-            .product(product)
-            .src(fileUploadResponse.getUrl())
-            .filename(fileUploadResponse.getOriginalName())
-            .size(fileUploadResponse.getSize())
-            .assetId(fileUploadResponse.getAssetId())
-            .position(position)
-            .build();
+        productRepository.save(product);
 
-        product.getImages().add(imageEntity);
-        return productMapper.imageToResponse(productImageRepository.save(imageEntity));
+        return productMapper.imageToResponse(productImage);
     }
 
-    @Override
-    public ProductImageResponse getProductImageById(Integer id, Integer productId) {
-        ProductImage image = productImageRepository.findByIdAndProduct_Id(id, productId)
-            .orElseThrow(() -> new NotFoundException("Not found image with id: " + id + " and product id: " + productId));
-
-        if (!image.getProduct().getStatus().getValue().equalsIgnoreCase("ACTIVE")) {
-            throw new NotFoundException("Not found image with id: " + id + " and product id: " + productId);
-        }
-
-        return productMapper.imageToResponse(image);
+    @Transactional(readOnly = true)
+    public ProductImageResponse getProductImageById(Integer imageId, Integer productId) {
+        Product product = loadActiveProduct(productId);
+        return productMapper.imageToResponse(product.getImage(imageId));
     }
 
-    @Override
+    @Transactional(readOnly = true)
     public List<ProductImageResponse> getAllImagesWithProductId(Integer productId) {
-        return productImageRepository.
-            findAllByProductId(productId).stream().map(
-                productMapper::imageToResponse).toList();
+        Product product = loadActiveProduct(productId);
+        return product.getImages().stream()
+                .map(productMapper::imageToResponse)
+                .toList();
     }
 
-    @Override
-    public void deleteProductImageById(Integer id, Integer productId) throws Exception {
-        ProductImage productImage = productImageRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException("Not found product image with id: " + id));
+    public void deleteProductImageById(Integer imageId, Integer productId) throws Exception {
+        Product product = loadActiveProduct(productId);
 
-        if (!productImage.getProduct().getStatus().getValue().equalsIgnoreCase("ACTIVE")) {
-            throw new NotFoundException("Not found image with id: " + id + " and product id: " + productId);
+        ProductImage image = product.getImage(imageId);
+
+        fileUploadService.deleteFile(image.getAssetId());
+
+        product.removeImage(imageId);
+
+        productRepository.save(product);
+    }
+
+    private Product loadActiveProduct(Integer productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException("Product not found"));
+        if (product.getStatus() != ProductStatus.ACTIVE) {
+            throw new NotFoundException("Product not active");
         }
-
-        fileUploadService.deleteFile(productImage.getAssetId());
-
-        productImageRepository.deleteProductImageByIdAndProduct_id(id, productId);
+        return product;
     }
 }

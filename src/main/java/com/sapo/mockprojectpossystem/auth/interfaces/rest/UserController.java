@@ -1,24 +1,15 @@
 package com.sapo.mockprojectpossystem.auth.interfaces.rest;
 
-import com.sapo.mockprojectpossystem.auth.domain.enums.Role;
-import com.sapo.mockprojectpossystem.auth.domain.model.User;
-import com.sapo.mockprojectpossystem.auth.interfaces.request.UpdateUserRequest;
-import com.sapo.mockprojectpossystem.auth.interfaces.request.UserQueryParams;
-import com.sapo.mockprojectpossystem.auth.interfaces.response.UserResponse;
+import com.sapo.mockprojectpossystem.auth.application.request.UpdateUserRequest;
+import com.sapo.mockprojectpossystem.auth.application.request.UserQueryParams;
 import com.sapo.mockprojectpossystem.common.response.MessageResponse;
-import com.sapo.mockprojectpossystem.auth.application.UserService;
+import com.sapo.mockprojectpossystem.auth.application.implement.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor

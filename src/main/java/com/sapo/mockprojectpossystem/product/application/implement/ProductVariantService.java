@@ -1,14 +1,12 @@
 package com.sapo.mockprojectpossystem.product.application.implement;
 
 import com.sapo.mockprojectpossystem.product.application.interfaces.IProductMapper;
-import com.sapo.mockprojectpossystem.product.application.interfaces.IProductVariantService;
-import com.sapo.mockprojectpossystem.product.interfaces.request.ProductVariantRequest;
-import com.sapo.mockprojectpossystem.product.interfaces.response.ProductVariantResponse;
+import com.sapo.mockprojectpossystem.product.application.request.ProductVariantRequest;
+import com.sapo.mockprojectpossystem.product.application.response.ProductVariantResponse;
 import com.sapo.mockprojectpossystem.product.domain.model.Product;
-import com.sapo.mockprojectpossystem.product.domain.model.ProductVariant;
 import com.sapo.mockprojectpossystem.common.exception.NotFoundException;
 import com.sapo.mockprojectpossystem.product.domain.repository.ProductRepository;
-import com.sapo.mockprojectpossystem.product.domain.repository.ProductVariantRepository;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -19,46 +17,46 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ProductVariantService implements IProductVariantService {
-    ProductVariantRepository productVariantRepository;
+public class ProductVariantService{
     ProductRepository productRepository;
     IProductMapper productMapper;
 
-    @Override
+    @Transactional
     public List<ProductVariantResponse> getAllProductVariantsByProductId(Integer productId) {
-        return productVariantRepository.findAllByProduct_Id(
-                productId).stream().map(productMapper::variantToResponse)
-            .toList();
+        Product product = loadProduct(productId);
+        return product.getVariants().stream()
+                .map(productMapper::variantToResponse)
+                .toList();
     }
 
-    @Override
+    @Transactional
     public ProductVariantResponse getProductVariantById(Integer id, Integer productId) {
-        ProductVariant variant = productVariantRepository.findByIdAndProduct_id(id, productId)
-            .orElseThrow(() -> new NotFoundException("Not found variant with id: " + id + "and product id: " + productId));
-        return productMapper.variantToResponse(variant);
+        Product product = loadProduct(productId);
+        return productMapper.variantToResponse(product.getVariant(id));
     }
 
-    @Override
     public void deleteProductVariantById(Integer id, Integer productId) {
-        productVariantRepository.deleteByIdAndProduct_Id(id, productId);
+        Product product = loadProduct(productId);
+        product.removeVariant(id);
+        productRepository.save(product);
     }
 
-    @Override
-    public ProductVariantResponse updateProductVariant(Integer id, Integer productId, ProductVariantRequest request) {
-        ProductVariant variant = productVariantRepository.findByIdAndProduct_id(id, productId)
-            .orElseThrow(() -> new NotFoundException("Not found variant with id: " + id + " and product id: " + productId));
+    public ProductVariantResponse updateProductVariant(
+            Integer id,
+            Integer productId,
+            ProductVariantRequest request
+    ) {
+        Product product = loadProduct(productId);
 
-        Product product = productRepository.findById(productId)
-            .orElseThrow(() -> new NotFoundException("Not found product with id: " + productId));
+        product.updateVariant(id, request);
 
-        if (request.getImageId() != null &&
-            product.getImages().stream()
-                .noneMatch(productImage -> productImage.getId().equals(request.getImageId()))) {
-            throw new NotFoundException("Not found image id: " + request.getImageId() + " on product id: " + productId);
-        }
+        productRepository.save(product);
 
-        productMapper.updateVariantFromRequest(variant, request);
+        return productMapper.variantToResponse(product.getVariant(id));
+    }
 
-        return productMapper.variantToResponse(productVariantRepository.save(variant));
+    private Product loadProduct(Integer productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException("Product not found"));
     }
 }

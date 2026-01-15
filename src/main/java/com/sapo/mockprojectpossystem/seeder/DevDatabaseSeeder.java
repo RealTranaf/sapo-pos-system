@@ -56,27 +56,27 @@ public class DevDatabaseSeeder implements CommandLineRunner {
             System.out.println("✅ Seeded CUSTOMERS");
         }
 
-//        if (productRepository.count() == 0) {
-//            ProductMockFactory.seedProducts(
-//                    productRepository,
-//                    brandRepository,
-//                    typeRepository,
-//                    userRepository
-//            );
-//            System.out.println("✅ Seeded PRODUCTS + VARIANTS + OPTIONS + IMAGES");
-//        }
+        if (productRepository.count() == 0) {
+            ProductMockFactory.seedProducts(
+                    productRepository,
+                    brandRepository,
+                    typeRepository,
+                    userRepository
+            );
+            System.out.println("✅ Seeded PRODUCTS + VARIANTS + OPTIONS + IMAGES");
+        }
 
-//        // ✅ THÊM Ở ĐÂY
-//        if (purchaseRepository.count() == 0) {
-//            purchaseRepository.saveAll(
-//                    PurchaseMockFactory.all(
-//                            customerRepository.findAll(),
-//                            userRepository.findAll(),
-//                            productVariantRepository.findAll()
-//                    )
-//            );
-//            System.out.println("✅ Seeded PURCHASES + PURCHASE ITEMS");
-//        }
+        // ✅ THÊM Ở ĐÂY
+        if (purchaseRepository.count() == 0) {
+            purchaseRepository.saveAll(
+                    PurchaseMockFactory.all(
+                            customerRepository.findAll(),
+                            userRepository.findAll(),
+                            productVariantRepository.findAll()
+                    )
+            );
+            System.out.println("✅ Seeded PURCHASES + PURCHASE ITEMS");
+        }
 
         System.out.println("🔥 DevDatabaseSeeder FINISHED");
     }

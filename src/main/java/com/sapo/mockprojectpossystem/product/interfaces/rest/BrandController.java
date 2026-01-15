@@ -1,6 +1,6 @@
 package com.sapo.mockprojectpossystem.product.interfaces.rest;
 import com.sapo.mockprojectpossystem.common.response.MessageResponse;
-import com.sapo.mockprojectpossystem.product.interfaces.request.BrandQueryParams;
+import com.sapo.mockprojectpossystem.product.application.request.BrandQueryParams;
 import com.sapo.mockprojectpossystem.product.application.implement.BrandService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

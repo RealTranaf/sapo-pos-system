@@ -1,6 +1,5 @@
 package com.sapo.mockprojectpossystem.auth.domain.model;
 
-import com.sapo.mockprojectpossystem.auth.domain.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Getter;

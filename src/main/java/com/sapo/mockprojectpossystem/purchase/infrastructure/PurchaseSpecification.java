@@ -8,7 +8,7 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public class PurchaseSpecification {
 
@@ -77,10 +77,10 @@ public class PurchaseSpecification {
     // Query tìm kiếm đơn hàng có tiền khuyến mãi trong khoảng
 
 
-    public static Specification<Purchase> createdDateBetween(LocalDateTime start, LocalDateTime end) {
+    public static Specification<Purchase> createdDateBetween(Instant start, Instant end) {
         return (root, query, cb) -> {
             if (start == null || end == null) return null;
-            return cb.between(root.get("createdAt"), start, end);
+            return cb.between(root.get("createdOn"), start, end);
         };
     }
     // Query tìm kiếm đơn hàng xảy ra trong khoản thời gian nhất định

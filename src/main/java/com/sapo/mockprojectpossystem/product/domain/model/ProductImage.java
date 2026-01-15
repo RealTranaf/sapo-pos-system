@@ -1,29 +1,23 @@
 package com.sapo.mockprojectpossystem.product.domain.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Entity
 @Table(name = "product_images")
-@Data
+@Getter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class ProductImage {
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
@@ -51,11 +45,27 @@ public class ProductImage {
 
     private Integer height;
 
+    @Column(updatable = false)
     @CreationTimestamp
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private Instant createdOn;
 
     @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    private Instant modifiedOn;
+
+    public static ProductImage create(Product product, Integer position, String src, String filename, String assetId, Integer size) {
+        return new ProductImage(product, position, src, filename, assetId, size);
+    }
+
+    private ProductImage(Product product, Integer position, String src, String filename, String assetId, Integer size) {
+        this.product = product;
+        this.position = position;
+        this.src = src;
+        this.filename = filename;
+        this.assetId = assetId;
+        this.size = size;
+    }
+
+    public void assignTo(Product product) {
+        this.product = product;
+    }
 }

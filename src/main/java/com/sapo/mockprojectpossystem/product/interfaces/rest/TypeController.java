@@ -1,6 +1,6 @@
 package com.sapo.mockprojectpossystem.product.interfaces.rest;
 
-import com.sapo.mockprojectpossystem.product.interfaces.request.TypeQueryParams;
+import com.sapo.mockprojectpossystem.product.application.request.TypeQueryParams;
 import com.sapo.mockprojectpossystem.common.response.MessageResponse;
 import com.sapo.mockprojectpossystem.product.application.implement.TypeService;
 import lombok.RequiredArgsConstructor;

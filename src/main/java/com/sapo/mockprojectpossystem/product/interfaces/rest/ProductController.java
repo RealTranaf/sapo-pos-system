@@ -1,16 +1,16 @@
 package com.sapo.mockprojectpossystem.product.interfaces.rest;
 
-import com.sapo.mockprojectpossystem.product.interfaces.request.ProductCreateRequest;
-import com.sapo.mockprojectpossystem.product.interfaces.request.ProductSearchRequest;
-import com.sapo.mockprojectpossystem.product.interfaces.request.ProductUpdateRequest;
-import com.sapo.mockprojectpossystem.product.interfaces.request.ProductVariantRequest;
+import com.sapo.mockprojectpossystem.product.application.implement.ProductImageService;
+import com.sapo.mockprojectpossystem.product.application.implement.ProductService;
+import com.sapo.mockprojectpossystem.product.application.implement.ProductVariantService;
+import com.sapo.mockprojectpossystem.product.application.request.ProductCreateRequest;
+import com.sapo.mockprojectpossystem.product.application.request.ProductSearchRequest;
+import com.sapo.mockprojectpossystem.product.application.request.ProductUpdateRequest;
+import com.sapo.mockprojectpossystem.product.application.request.ProductVariantRequest;
 import com.sapo.mockprojectpossystem.common.response.PaginatedResponse;
-import com.sapo.mockprojectpossystem.product.interfaces.response.ProductImageResponse;
-import com.sapo.mockprojectpossystem.product.interfaces.response.ProductResponse;
-import com.sapo.mockprojectpossystem.product.interfaces.response.ProductVariantResponse;
-import com.sapo.mockprojectpossystem.product.application.interfaces.IProductImageService;
-import com.sapo.mockprojectpossystem.product.application.interfaces.IProductService;
-import com.sapo.mockprojectpossystem.product.application.interfaces.IProductVariantService;
+import com.sapo.mockprojectpossystem.product.application.response.ProductImageResponse;
+import com.sapo.mockprojectpossystem.product.application.response.ProductResponse;
+import com.sapo.mockprojectpossystem.product.application.response.ProductVariantResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,14 +27,12 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/products")
 public class ProductController {
-    private final IProductService productService;
-    private final IProductImageService productImageService;
-    private final IProductVariantService productVariantService;
+    private final ProductService productService;
+    private final ProductImageService productImageService;
+    private final ProductVariantService productVariantService;
 
     @GetMapping
-    public ResponseEntity<PaginatedResponse<ProductResponse>> getOrSearchProducts(
-        @Valid ProductSearchRequest productSearchRequest
-    ) {
+    public ResponseEntity<PaginatedResponse<ProductResponse>> getOrSearchProducts(@Valid ProductSearchRequest productSearchRequest) {
         PaginatedResponse<ProductResponse> response = productService.getOrSearchProducts(productSearchRequest);
         return ResponseEntity.ok(response);
     }
@@ -47,9 +45,8 @@ public class ProductController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
-    public ResponseEntity<ProductResponse> createProduct(
-        @Valid @RequestPart("product") ProductCreateRequest request,
-        @RequestPart(value = "images", required = false) List<MultipartFile> images
+    public ResponseEntity<ProductResponse> createProduct(@Valid @RequestPart("product") ProductCreateRequest request,
+                                                         @RequestPart(value = "images", required = false) List<MultipartFile> images
     ) throws IOException {
         ProductResponse response = productService.createProduct(request, images);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -57,9 +54,8 @@ public class ProductController {
 
     @PutMapping("/{productId}")
     @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
-    public ResponseEntity<ProductResponse> updateProduct(
-        @PathVariable Integer productId,
-        @Valid @RequestBody ProductUpdateRequest request
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Integer productId,
+                                                         @Valid @RequestBody ProductUpdateRequest request
     ) {
         ProductResponse response = productService.updateProduct(productId, request);
         return ResponseEntity.ok(response);
@@ -75,13 +71,17 @@ public class ProductController {
 
     @PostMapping("/{productId}/images")
     @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
-    public ResponseEntity<ProductImageResponse> createProductImage(@PathVariable Integer productId, @RequestPart("image") MultipartFile image) throws IOException {
+    public ResponseEntity<ProductImageResponse> createProductImage(@PathVariable Integer productId,
+                                                                   @RequestPart("image") MultipartFile image
+    ) throws IOException {
         return ResponseEntity.status(HttpStatus.CREATED).body(productImageService.createProductImage(productId, image));
     }
 
     @GetMapping("/{productId}/images/{imageId}")
     @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
-    public ResponseEntity<ProductImageResponse> getProductImageById(@PathVariable Integer productId, @PathVariable Integer imageId) {
+    public ResponseEntity<ProductImageResponse> getProductImageById(@PathVariable Integer productId,
+                                                                    @PathVariable Integer imageId
+    ) {
         return ResponseEntity.status(HttpStatus.OK).body(productImageService.getProductImageById(imageId, productId));
     }
 
@@ -93,7 +93,9 @@ public class ProductController {
 
     @DeleteMapping("/{productId}/images/{imageId}")
     @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
-    public ResponseEntity<?> deleteProductImageById(@PathVariable Integer productId, @PathVariable Integer imageId) throws Exception {
+    public ResponseEntity<?> deleteProductImageById(@PathVariable Integer productId,
+                                                    @PathVariable Integer imageId
+    ) throws Exception {
         productImageService.deleteProductImageById(imageId, productId);
         return ResponseEntity.noContent().build();
     }
@@ -102,7 +104,9 @@ public class ProductController {
 
     @GetMapping("/{productId}/variants/{variantId}")
     @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
-    public ResponseEntity<ProductVariantResponse> getProductVariantById(@PathVariable Integer productId, @PathVariable Integer variantId) {
+    public ResponseEntity<ProductVariantResponse> getProductVariantById(@PathVariable Integer productId,
+                                                                        @PathVariable Integer variantId
+    ) {
         return ResponseEntity.status(HttpStatus.OK).body(productVariantService.getProductVariantById(variantId, productId));
     }
 
@@ -113,16 +117,18 @@ public class ProductController {
 
     @PutMapping("/{productId}/variants/{variantId}")
     @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
-    public ResponseEntity<ProductVariantResponse> updateProductVariantWithProductId(
-        @PathVariable Integer productId,
-        @PathVariable Integer variantId,
-        @RequestBody ProductVariantRequest request) {
+    public ResponseEntity<ProductVariantResponse> updateProductVariantWithProductId(@PathVariable Integer productId,
+                                                                                    @PathVariable Integer variantId,
+                                                                                    @RequestBody ProductVariantRequest request
+    ) {
         return ResponseEntity.status(HttpStatus.OK).body(productVariantService.updateProductVariant(variantId, productId, request));
     }
 
     @DeleteMapping("/{productId}/variants/{variantId}")
     @PreAuthorize("hasAnyRole('OWNER', 'SALES')")
-    public ResponseEntity<?> deleteProductVariantById(@PathVariable Integer productId, @PathVariable Integer variantId) {
+    public ResponseEntity<?> deleteProductVariantById(@PathVariable Integer productId,
+                                                      @PathVariable Integer variantId
+    ) {
         productVariantService.deleteProductVariantById(variantId, productId);
         return ResponseEntity.noContent().build();
     }

@@ -1,20 +1,16 @@
 package com.sapo.mockprojectpossystem.product.application.implement;
 
 import com.sapo.mockprojectpossystem.common.response.PageResponse;
-import com.sapo.mockprojectpossystem.product.domain.model.Brand;
 import com.sapo.mockprojectpossystem.product.domain.model.Type;
 import com.sapo.mockprojectpossystem.product.domain.repository.TypeRepository;
-import com.sapo.mockprojectpossystem.product.interfaces.request.TypeQueryParams;
-import com.sapo.mockprojectpossystem.product.interfaces.response.BrandResponse;
-import com.sapo.mockprojectpossystem.product.interfaces.response.TypeResponse;
+import com.sapo.mockprojectpossystem.product.application.request.TypeQueryParams;
+import com.sapo.mockprojectpossystem.product.application.response.TypeResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

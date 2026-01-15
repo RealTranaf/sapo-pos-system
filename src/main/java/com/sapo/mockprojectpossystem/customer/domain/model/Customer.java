@@ -1,6 +1,5 @@
 package com.sapo.mockprojectpossystem.customer.domain.model;
 
-import com.sapo.mockprojectpossystem.customer.domain.enums.Gender;
 import com.sapo.mockprojectpossystem.purchase.domain.model.Purchase;
 import jakarta.persistence.*;
 import lombok.*;
@@ -53,7 +52,7 @@ public class Customer {
     }
 
     private Customer(String name, PhoneNumber phoneNumber, Gender gender, String note) {
-        validateCustomer(name, phoneNumber.getValue());
+        validateCustomer(name, phoneNumber.getValue(), gender);
         this.name = name.trim();
         this.phoneNum = phoneNumber.getValue();
         this.gender = gender == null ? Gender.NaN : gender;
@@ -61,7 +60,7 @@ public class Customer {
     }
 
     public void update(String name, PhoneNumber phoneNumber, Gender gender, String note) {
-        validateCustomer(name, phoneNumber.getValue());
+        validateCustomer(name, phoneNumber.getValue(), gender);
         this.name = name.trim();
         this.phoneNum = phoneNumber.getValue();
         this.gender = gender;

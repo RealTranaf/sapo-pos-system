@@ -1,11 +1,10 @@
 package com.sapo.mockprojectpossystem.auth.interfaces.rest;
 
-import com.sapo.mockprojectpossystem.auth.interfaces.request.LoginRequest;
-import com.sapo.mockprojectpossystem.auth.interfaces.request.ResetPasswordRequest;
-import com.sapo.mockprojectpossystem.auth.interfaces.request.SignUpRequest;
-import com.sapo.mockprojectpossystem.auth.interfaces.response.LoginResponse;
+import com.sapo.mockprojectpossystem.auth.application.request.LoginRequest;
+import com.sapo.mockprojectpossystem.auth.application.request.ResetPasswordRequest;
+import com.sapo.mockprojectpossystem.auth.application.request.SignUpRequest;
 import com.sapo.mockprojectpossystem.common.response.MessageResponse;
-import com.sapo.mockprojectpossystem.auth.application.AuthService;
+import com.sapo.mockprojectpossystem.auth.application.implement.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

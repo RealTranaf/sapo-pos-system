@@ -1,6 +1,6 @@
 package com.sapo.mockprojectpossystem.auth.infrastructure.config;
 
-import com.sapo.mockprojectpossystem.auth.domain.enums.Role;
+import com.sapo.mockprojectpossystem.auth.domain.model.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;

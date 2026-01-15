@@ -24,9 +24,18 @@ public class PurchaseItem {
     private int quantity;
     private double totalPrice;
 
-    public PurchaseItem(ProductVariant product, Purchase purchase, int quantity) {
-        this.productVariant = product;
+
+    public static PurchaseItem create(Purchase purchase, ProductVariant variant, int quantity) {
+        return new PurchaseItem(purchase, variant, quantity);
+    }
+
+    private PurchaseItem(Purchase purchase, ProductVariant variant, int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be > 0");
+        }
         this.purchase = purchase;
+        this.productVariant = variant;
         this.quantity = quantity;
+        this.totalPrice = variant.getPrice() * quantity;
     }
 }

@@ -25,32 +25,34 @@ public class PurchaseMockFactory {
             Customer customer = customers.get(random.nextInt(customers.size()));
             User user = users.get(random.nextInt(users.size()));
 
-            Purchase purchase = new Purchase();
-            purchase.setCustomer(customer);
-            purchase.setUser(user);
-            purchase.setNote("Mock purchase #" + (i + 1));
+            Purchase purchase = Purchase.create(customer, user, "Mock purchase #" + (i + 1));
 
             // Items
-            List<PurchaseItem> items =
-                    PurchaseItemMockFactory.forPurchase(purchase, variants);
+            int itemCount = random.nextInt(3) + 1; // 1–3 items
+            for (int j = 0; j < itemCount; j++) {
+                ProductVariant variant = randomFrom(variants);
+                int quantity = random.nextInt(3) + 1;
 
-            purchase.setPurchaseItems(items);
+                if (variant.getInventoryQuantity() < quantity) {
+                    continue;
+                }
+
+                purchase.addItem(variant, quantity);
+            }
 
             // Calculate total
-            double total = items.stream()
-                    .mapToDouble(PurchaseItem::getTotalPrice)
-                    .sum();
-
-            double discount = random.nextBoolean()
-                    ? total * 0.05
-                    : 0.0;
-
-            purchase.setTotalAmount(total - discount);
-            purchase.setDiscountAmount(discount);
+            if (random.nextBoolean()) {
+                double discount = purchase.getTotalAmount() * 0.05;
+                purchase.applyDiscount(discount);
+            }
 
             purchases.add(purchase);
         }
 
         return purchases;
+    }
+
+    private static <T> T randomFrom(List<T> list) {
+        return list.get(random.nextInt(list.size()));
     }
 }

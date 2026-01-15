@@ -7,7 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 import static com.sapo.mockprojectpossystem.common.validation.CommonValidation.validateName;
@@ -32,7 +32,7 @@ public class Type {
     private Instant modifiedOn;
 
     @ManyToMany(mappedBy = "types", fetch = FetchType.LAZY)
-    private Set<Product> products;
+    private Set<Product> products = new HashSet<>();
 
     public static Type create(String name) {
         validateName(name);
